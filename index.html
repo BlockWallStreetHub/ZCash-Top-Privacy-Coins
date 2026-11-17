@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy in Crypto: The Deep-Dive Course | Block Wall Street</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0a1428;--navy2:#101d38;--navy3:#16264a;--gold:#d4a94a;--gold2:#f0cf7a;--ink:#e8ecf4;--mut:#9aa8c4;--ok:#3fb97f;--bad:#e0605e;--line:#243459}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--navy);color:var(--ink);font-family:'Barlow',system-ui,sans-serif;font-size:18px;line-height:1.65}
+h1,h2,h3{font-family:'Bebas Neue',Impact,sans-serif;letter-spacing:.04em;font-weight:400;margin:0}
+.hero{padding:56px 22px 36px;text-align:center;background:radial-gradient(ellipse at top,#1b2f5e 0%,var(--navy) 70%);border-bottom:1px solid var(--line)}
+.hero .brand{font-family:'DM Mono',monospace;color:var(--gold);letter-spacing:.3em;font-size:13px;text-transform:uppercase}
+.hero h1{font-size:clamp(40px,8vw,84px);color:var(--gold2);line-height:1;margin:12px 0}
+.hero p{max-width:760px;margin:10px auto;color:var(--mut)}
+.pill{display:inline-block;border:1px solid var(--gold);color:var(--gold);padding:3px 12px;border-radius:99px;font-family:'DM Mono',monospace;font-size:12px;margin:4px}
+nav{position:sticky;top:0;z-index:20;background:rgba(10,20,40,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:8px 10px}
+.chips{display:flex;gap:6px;overflow-x:auto;max-width:1100px;margin:0 auto;padding-bottom:4px}
+.chip{flex:0 0 auto;background:var(--navy2);border:1px solid var(--line);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:'DM Mono',monospace;font-size:12px;white-space:nowrap}
+.chip.on{background:var(--gold);color:#1a1405;border-color:var(--gold);font-weight:600}
+.chip.done::after{content:" ✓";color:var(--ok)}
+.chip.on.done::after{color:#1a1405}
+.bar{height:5px;background:var(--navy3);max-width:1100px;margin:6px auto 0;border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .4s}
+main{max-width:860px;margin:0 auto;padding:30px 18px 80px}
+.kick{font-family:'DM Mono',monospace;color:var(--gold);font-size:13px;letter-spacing:.2em;text-transform:uppercase}
+main h2{font-size:clamp(34px,6vw,58px);color:var(--gold2);margin:4px 0 8px}
+main h3{font-size:28px;color:var(--gold);margin:30px 0 6px}
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:16px 0}
+.key{border-left:4px solid var(--gold);background:var(--navy3);border-radius:8px;padding:12px 16px;margin:16px 0}
+.key b{color:var(--gold2)}
+.warn{border-left:4px solid var(--bad);background:#2a1a24;border-radius:8px;padding:12px 16px;margin:16px 0}
+.warn b{color:#ff9a98}
+ul{padding-left:22px} li{margin:6px 0}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--navy3);color:var(--gold2);font-family:'DM Mono',monospace;font-size:12px;text-transform:uppercase}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 0}
+button,.btn{font-family:'DM Mono',monospace;background:var(--gold);color:#1a1405;border:0;padding:11px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:600}
+button.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.quiz{margin-top:44px;border-top:2px solid var(--gold);padding-top:10px}
+.q{background:var(--navy2);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:14px 0}
+.q p{margin:0 0 8px;font-weight:600}
+.q label{display:block;padding:8px 10px;margin:4px 0;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:16px}
+.q label:hover{background:var(--navy3)}
+.q input{margin-right:8px}
+.q.right{border-color:var(--ok)} .q.wrong{border-color:var(--bad)}
+.q .ex{display:none;margin-top:8px;font-size:15px;color:var(--mut)}
+.q.right .ex,.q.wrong .ex{display:block}
+.q.right label.pick{background:rgba(63,185,127,.15);border-color:var(--ok)}
+.q.wrong label.pick{background:rgba(224,96,94,.15);border-color:var(--bad)}
+.q.wrong label.ans{border-color:var(--ok)}
+.score{font-family:'Bebas Neue';font-size:40px;color:var(--gold2);margin:10px 0}
+.pager{display:flex;justify-content:space-between;margin-top:34px;gap:10px}
+input[type=text],input[type=email]{width:100%;padding:12px;border-radius:8px;border:1px solid var(--line);background:var(--navy3);color:var(--ink);font-size:17px;margin:6px 0 12px;font-family:'Barlow'}
+canvas{max-width:100%;border:1px solid var(--gold);border-radius:8px;margin-top:14px}
+.small{font-size:14px;color:var(--mut)}
+footer{text-align:center;color:var(--mut);padding:30px 16px;border-top:1px solid var(--line);font-size:14px}
+.msg{margin:10px 0;font-family:'DM Mono',monospace;font-size:14px}
+.sub{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 6px}
+.sub button{background:var(--navy2);color:var(--ink);border:1px solid var(--line);font-weight:500;padding:8px 12px;font-size:13px}
+.sub button.on{background:var(--gold);color:#1a1405;border-color:var(--gold);font-weight:700}
+.tl{border-left:3px solid var(--gold);margin:16px 0 16px 8px;padding-left:18px}
+.tl div{margin:0 0 12px;position:relative}
+.tl div::before{content:"";position:absolute;left:-26px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--gold)}
+.tl b{color:var(--gold2);font-family:'DM Mono',monospace;font-size:14px}
+.case{border:1px solid var(--gold);background:linear-gradient(180deg,#14234a,#0f1b38);border-radius:12px;padding:14px 20px;margin:18px 0}
+.case h4{margin:0 0 6px;font-family:'Bebas Neue';font-size:26px;color:var(--gold2);letter-spacing:.04em;font-weight:400}
+.think{border:1px dashed var(--gold);border-radius:10px;padding:10px 16px;margin:16px 0;color:var(--gold2)}
+.gl dt{font-family:'DM Mono',monospace;color:var(--gold2);margin-top:12px}
+.gl dd{margin:2px 0 0 0;color:var(--ink)}
+.pct{font-family:'DM Mono',monospace;color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="brand">Block Wall Street · Class Course · Deep-Dive Edition</div>
+  <h1>Privacy in Crypto</h1>
+  <p>A full, project-by-project breakdown of five networks shaping the privacy narrative: <b>Zcash, NEAR, Starknet, Zano and Midnight</b>. Real history, how the tech works, token design, real exploits, and what could go wrong.</p>
+  <div><span class="pill">8 modules</span><span class="pill">30+ lessons</span><span class="pill">Quiz every module</span><span class="pill">50-question final</span><span class="pill">Glossary</span><span class="pill">Certificate</span></div>
+</header>
+<nav><div class="chips" id="chips"></div><div class="bar"><i id="barfill"></i></div></nav>
+<main id="main"></main>
+<footer>Block Wall Street · Educational content only. Not financial, tax or legal advice. Facts and figures come from public news and project sources as of November 16, 2026 and can change fast. Some sources are promotional and some figures conflict; we flag those. Always verify with official sources.</footer>
+
+<script>
+var KEY='cbde23f6-f617-4b16-953f-7b0aab0e9f58';
+var COURSE_TITLE='Privacy in Crypto: The Deep-Dive Course (Zcash, NEAR, Starknet, Zano & Midnight)';
+function Q(q,o,a,e){return {q:q,o:o,a:a,e:e};}
+var SECTIONS=[
+{id:'intro',short:'Foundations',title:'Module 1: Foundations of Crypto Privacy',kicker:'Module 1 · Start here',
+parts:[
+{t:'Why privacy matters',html:`
+<h2>Why Crypto Needs Privacy</h2>
+<p>Most blockchains, like Bitcoin and Ethereum, are <b>public ledgers</b>. Anyone can look up an address and see its balance and every payment it ever made. That openness is great for trust, because nobody has to take a bank's word for anything. But it is not great for normal life.</p>
+<div class="card"><b>A simple example.</b> You pay for lunch with crypto. The shop gets your address. Now the shop can look that address up and see your other payments and how much you hold. Your landlord, your boss, a stalker or a thief could do the same thing.</div>
+
+<h3>Four kinds of people who get hurt by public ledgers</h3>
+<ul>
+<li><b>Everyday users.</b> Anyone you pay can study your whole money history. Wallet "profiling" companies also sell this kind of tracking.</li>
+<li><b>Businesses.</b> A company paying staff on a public chain shows every salary. A supplier can see who else a company buys from and for how much.</li>
+<li><b>Traders and funds.</b> A big buyer shows the whole market what they are doing. Bots can copy or front-run them. Front-running means jumping in line ahead of someone's trade to profit from it.</li>
+<li><b>People at physical risk.</b> If an attacker can link an address to a person and see a big balance, the danger is real. A security firm, CertiK, counted 34 "wrench attacks" (physical attacks to force someone to hand over crypto) in early 2026, up 41%.</li>
+</ul>
+
+<h3>Privacy is not the same as secrecy or crime</h3>
+<p>Your bank statement is private, but the bank, the tax office and a court can still see it when they have a good reason. People close their bathroom door. That is privacy, not guilt. The hard part for crypto is building privacy that normal people can use while still letting a few trusted parties check things when the law demands it. Every project in this course answers that tension in its own way.</p>
+
+<div class="key"><b>Key idea: pseudonymous is not private.</b> Bitcoin addresses do not carry your name, so Bitcoin is <i>pseudonymous</i>. But once one address is linked to you (an exchange sign-up, a shop delivery, a sloppy tweet), every payment tied to it can be followed. Chain-analysis companies make money doing exactly this.</div>
+
+<h3>What can be hidden?</h3>
+<p>Privacy tools can hide different things. Always ask which one a project actually hides:</p>
+<table><tr><th>What</th><th>Meaning</th></tr>
+<tr><td>Sender</td><td>Who sent the payment</td></tr>
+<tr><td>Receiver</td><td>Who got it</td></tr>
+<tr><td>Amount</td><td>How much moved</td></tr>
+<tr><td>Asset type</td><td>Which token it was</td></tr>
+<tr><td>Link / trail</td><td>The connection between your main wallet and your later activity</td></tr>
+<tr><td>Metadata</td><td>Timing, IP address, fees and other side details</td></tr>
+</table>
+<div class="think"><b>Pause and think:</b> A project says "your amounts are hidden." Does that mean your identity is hidden too? (Not necessarily. Later we will see projects that hide the amount but show the token, or hide the link but leave the balance visible.)</div>
+`},
+{t:'The privacy toolkit',html:`
+<h2>The Privacy Toolkit</h2>
+<p>Every project in this course is built from a small set of tools. Learn these six and the rest of the course gets much easier.</p>
+
+<h3>1. Ring signatures</h3>
+<p>A ring signature lets you sign a payment in a way that proves "one member of this group signed," without saying which one. The other members are <b>decoys</b>. Monero uses a ring of 16 (your real spend plus 15 decoys). Zano uses a related design. The weakness: if the decoys are guessable or too few, an analyst can sometimes narrow the field.</p>
+
+<h3>2. Stealth addresses</h3>
+<p>The sender makes a fresh one-time address for every payment, using the receiver's public info. Only the receiver can spot and spend it. Watchers on the chain see a pile of unrelated addresses instead of one address collecting money.</p>
+
+<h3>3. Zero-knowledge proofs (ZKPs)</h3>
+<p>A ZKP proves a statement is true without showing the secret behind it. Example: "I own a coin that is in the pool, and I did not spend it before" without saying <i>which</i> coin. Two families you will meet:</p>
+<ul>
+<li><b>zk-SNARKs.</b> Very small proofs that are quick to check. Zcash made them famous. Some older SNARKs needed a "trusted setup," a one-time ceremony where secret leftovers had to be destroyed.</li>
+<li><b>zk-STARKs.</b> Proofs that need no trusted setup and rely on hash functions, which is why people expect them to resist future quantum computers better. They are bigger. Starknet is built on STARKs.</li>
+</ul>
+<p>Zcash's newer <b>Halo 2</b> system removed the trusted-setup problem for its Orchard pool.</p>
+
+<h3>4. Shielded pools and nullifiers</h3>
+<p>Think of a <b>shielded pool</b> as a locked room where coins are stored as encrypted "notes." To spend a note you prove you own one, and you reveal a <b>nullifier</b>, a special tag that says "this note is used up." The nullifier cannot be traced back to the note, but it stops double-spending. This pool-and-nullifier idea is behind Zcash and Starknet's STRK20.</p>
+
+<h3>5. Trusted execution environments (TEEs) and MPC</h3>
+<ul>
+<li><b>TEE.</b> A sealed area inside a computer chip (like Intel TDX) where code runs and even the machine's owner cannot peek inside. NEAR's confidential features lean on TEEs. The trade-off: you trust the chip maker and the hardware, and hardware flaws do get found.</li>
+<li><b>MPC (multi-party computation).</b> Several parties jointly compute something while each keeps its own piece secret. A key can be split so no single party holds all of it. Bridges often use this.</li>
+</ul>
+
+<h3>6. Viewing keys and selective disclosure</h3>
+<p>A viewing key lets one chosen person, like an auditor or a tax preparer, read specific transactions without making everything public and without letting them spend your coins. This is how projects try to offer privacy <i>and</i> compliance.</p>
+
+<div class="key"><b>Key idea: the anonymity set.</b> Privacy gets stronger when more people use it. With 10 private users it is easy to guess who is who. With thousands, you blend into a crowd. This is why Zcash watchers track how much ZEC sits in shielded pools.</div>
+<table><tr><th>Tool</th><th>Hides</th><th>Used by (in this course)</th></tr>
+<tr><td>Ring signatures</td><td>Which input is the real one</td><td>Zano</td></tr>
+<tr><td>Stealth addresses</td><td>Receiver trail</td><td>Zano</td></tr>
+<tr><td>zk-SNARKs (Halo 2)</td><td>Sender, receiver, amount</td><td>Zcash, Midnight</td></tr>
+<tr><td>STARK proofs</td><td>Computation, in-pool transfers</td><td>Starknet</td></tr>
+<tr><td>TEEs</td><td>Data during computation</td><td>NEAR</td></tr>
+<tr><td>Viewing keys</td><td>Nothing; they reveal on purpose</td><td>Zcash, Starknet, Midnight (planned)</td></tr>
+</table>
+`},
+{t:'The privacy spectrum & rules',html:`
+<h2>The Privacy Spectrum and the Rulebook</h2>
+<h3>Not every project does privacy the same way</h3>
+<ul>
+<li><b>Optional privacy on its own chain.</b> You choose public or private for each transaction. <i>Zcash.</i></li>
+<li><b>Privacy by default on its own chain.</b> Hidden unless you do something special. <i>Zano.</i></li>
+<li><b>Privacy added on top of a public chain.</b> The base chain stays open and private features sit above it. <i>Starknet (STRK20) and NEAR (Confidential Intents).</i></li>
+<li><b>Private smart-contract chain with built-in disclosure.</b> Data is private by design, and you pick what to reveal. <i>Midnight.</i></li>
+</ul>
+<div class="key"><b>Our four questions for every project.</b> (1) What is hidden? (2) Is privacy optional or on by default? (3) Who is able to see the data? (4) What could go wrong? We will use them in every module.</div>
+
+<h3>The compliance tension</h3>
+<p>Governments want to stop money laundering and sanctions evasion. Privacy tools can make that harder, so rules are tightening in many places:</p>
+<ul>
+<li>In the EU, new anti-money-laundering rules are set to start on <b>July 10, 2027</b>, barring regulated crypto firms from handling accounts that hold anonymity-enhancing coins. (From Midnight coverage; check the exact scope before relying on it.)</li>
+<li>Past U.S. actions hit privacy tools like mixers. The wallet Samourai was shut down and Wasabi dropped its CoinJoin feature.</li>
+<li>Many large exchanges have delisted or limited privacy coins.</li>
+</ul>
+<p>That is why newer projects stress <b>"compliant privacy"</b>: strong privacy for ordinary users plus a controlled way to open the books for regulators.</p>
+
+<h3>Where privacy can leak even when the tech is good</h3>
+<ul>
+<li><b>Mixing public and private.</b> If you move coins from a public address into a private pool and out again at the same size and time, observers can guess the link.</li>
+<li><b>Small crowds.</b> A tiny anonymity set is easy to analyze.</li>
+<li><b>Metadata.</b> Your IP address, wallet app or exchange records can unmask you.</li>
+<li><b>Human mistakes.</b> Reusing addresses, bragging online, or screenshots.</li>
+<li><b>Bugs.</b> A flaw in the cryptography or code can break everything. You will see real examples (Zcash and Zano) later in this course.</li>
+</ul>
+<div class="warn"><b>Heads up.</b> This course teaches how the technology works and what happened. It does not tell you what to buy. Privacy coins are volatile, and rules differ by country.</div>
+
+<div class="case"><h4>Mini case: why "private" is not "hidden from everyone"</h4>
+<p>Starknet's privacy pool hides who is sending what inside the pool. But when you deposit or withdraw, those moments are visible, and an oversight party can open data under a legal request. Midnight and Starknet both bake in a path for auditors. Zcash's viewing keys do the same job. Privacy here means "hidden from the public," not "hidden from everyone forever."</p></div>
+`}
+],
+quiz:[
+Q('Why is Bitcoin called pseudonymous instead of private?',['Addresses do not show names, but once one address is linked to you its payments can be followed','Every payment is encrypted end to end','Only miners can see transactions','Addresses change after every block automatically'],0,'Pseudonymous means no name is attached, but linking one address to a person exposes the whole trail.'),
+Q('What is "front-running" in the lesson?',['Jumping ahead of someone\'s trade to profit from it','Sending coins to a new wallet','Mining a block early','Paying a lower fee'],0,'Front-running means getting in line ahead of a visible trade, which is easier when trades are public.'),
+Q('A ring signature in Monero-style systems mixes your real spend with how many decoys (ring of 16)?',['1','15','16','100'],1,'A ring of 16 means your real spend plus 15 decoys.'),
+Q('What do stealth addresses do?',['Create a fresh one-time address for each payment','Lock your coins for a year','Let anyone see your balance','Speed up block times'],0,'A new one-time address per payment prevents watchers from collecting your payments on one address.'),
+Q('Which proof family needs no trusted setup and is built on hash functions?',['zk-STARKs','Ring signatures','Stealth addresses','Viewing keys'],0,'STARKs avoid trusted setups and rely on hashes. Starknet is built on them.'),
+Q('What did Zcash\'s Halo 2 system change for the Orchard pool?',['It removed the need for a trusted setup','It made every transaction public','It capped supply at 21M','It added ring signatures'],0,'Halo 2 removed the trusted-setup requirement for Orchard.'),
+Q('What does a nullifier do in a shielded pool?',['Marks a note as spent without revealing which note it was','Encrypts the sender address','Sets the transaction fee','Lists every note in the pool'],0,'It blocks double-spending while hiding which note was used.'),
+Q('What is the main trade-off of a TEE?',['You must trust the chip maker and hardware','It cannot run any code','It makes data public','It needs a trusted setup ceremony'],0,'TEEs hide data from the machine owner but depend on hardware trust, and flaws can be found.'),
+Q('What can someone holding only a viewing key do?',['Read specific transactions but not spend your coins','Spend all your coins','Change your address','Mine blocks'],0,'Viewing keys give read access for selective disclosure, not spending power.'),
+Q('Why does a bigger anonymity set help?',['More users make it harder to single anyone out','It lowers fees','It raises the coin price','It speeds up blocks'],0,'Blending into a larger crowd makes analysis harder.'),
+Q('Which project in this course is described as privacy ON BY DEFAULT on its own chain?',['Zano','Zcash','NEAR','Starknet'],0,'Zano hides by default; Zcash is optional.'),
+Q('The lesson says the EU anti-money-laundering rules referenced are set to begin on what date?',['July 10, 2027','January 1, 2025','December 4, 2026','March 30, 2026'],0,'The Midnight coverage cites rules from July 10, 2027 affecting regulated firms and anonymity-enhancing coins.'),
+Q('Which is a way privacy can leak even if the cryptography is strong?',['Moving the same amount in and out of a pool at the same time','Using a longer password','Running a full node','Using a hardware wallet'],0,'Matching size and timing can let observers guess the link, even if the proofs are sound.'),
+Q('"Privacy here means hidden from the public, not hidden from everyone forever." Which feature mainly supports that idea?',['Viewing keys and auditor access','Ring signatures','Proof of work','Block rewards'],0,'Selective disclosure lets approved parties see data when required.')
+]}
+,
+{id:'zcash',short:'Zcash',title:'Module 2: Zcash (ZEC)',kicker:'Module 2 · Project 1 of 5',
+parts:[
+{t:'Origins & how it works',html:`
+<h2>Zcash: The Original Zero-Knowledge Coin</h2>
+<p>Zcash is a Bitcoin-style blockchain with one big upgrade: it can hide the sender, the receiver and the amount of a payment using zero-knowledge proofs. It was the first major chain to build zk-SNARKs straight into its base protocol.</p>
+<h3>Where it came from</h3>
+<div class="tl">
+<div><b>2013</b><br>Researchers at Johns Hopkins University publish Zerocash, a design for private Bitcoin-like payments. It followed an earlier idea called Zerocoin.</div>
+<div><b>2016</b><br>Zcash launches (first block Oct 2016). Zooko Wilcox starts the Electric Coin Company (ECC) to build it. The first launch needed a "trusted setup ceremony."</div>
+<div><b>Oct 2018</b><br><b>Sapling</b> upgrade: shielded transactions get fast and cheap enough for phones.</div>
+<div><b>2020</b><br><b>Heartwood</b> lets miners pay into shielded addresses, and <b>Canopy</b> brings the first halving and replaces the "founders' reward" with a four-year Development Fund.</div>
+<div><b>May 31, 2022</b><br><b>NU5 / Orchard</b>: the Halo 2 proving system removes the trusted-setup need, and Unified Addresses arrive.</div>
+</div>
+<h3>The basic design</h3>
+<ul>
+<li><b>Proof of Work</b> using Equihash mining, like Bitcoin in spirit.</li>
+<li><b>Fixed supply of 21 million ZEC</b>, with a halving about every four years. The next halving is expected in November 2028, cutting the block reward to 0.78125 ZEC.</li>
+<li><b>Two address worlds.</b> <b>Transparent (t-addresses)</b> work like Bitcoin: everything is public. <b>Shielded (z-addresses)</b> hide sender, receiver and amount. A payment can go public-to-public, public-to-shielded, shielded-to-shielded, or shielded-to-public.</li>
+</ul>
+<div class="key"><b>Key idea: optional privacy.</b> Zcash lets you choose. That keeps Zcash friendlier to regulators and exchanges, but it also means privacy only works fully if people actually use the shielded side.</div>
+
+<h3>The shielded pools</h3>
+<table><tr><th>Pool</th><th>Launched</th><th>Notes</th></tr>
+<tr><td>Sprout</td><td>2016</td><td>The original. Slow and heavy. Late 2025 it held only about 25,591 ZEC (~0.2% of supply), a leftover that most people moved away from.</td></tr>
+<tr><td>Sapling</td><td>Oct 2018</td><td>Much faster. Still used. Was shrinking in late 2025 as people moved to Orchard.</td></tr>
+<tr><td>Orchard</td><td>May 31, 2022</td><td>Uses Halo 2, no trusted setup. Holds the vast majority of shielded ZEC (more than 4 million ZEC, about a quarter of supply in late 2025).</td></tr></table>
+<p><b>Unified Addresses</b> bundle several address types into one string so a wallet can use the most private pool automatically.</p>
+<h3>The turnstile: a safety net for supply</h3>
+<p>Because shielded amounts are hidden, nobody can easily count them. Zcash uses a <b>turnstile</b> rule: coins moving out of a pool cannot exceed what went in. If a hidden bug ever created fake coins inside a pool, they could not be pulled out beyond the pool's recorded total. This idea matters a lot in the Orchard bug case study later.</p>
+`},
+{t:'Using Zcash & adoption',html:`
+<h2>Using Zcash Today: Wallets, Shielded Supply and Adoption</h2>
+<h3>Wallets</h3>
+<ul>
+<li><b>Zashi</b> was launched in March 2024 by Electric Coin Company as a phone wallet built for shielded ZEC. In February 2026 the team renamed it <b>Zodl</b> after a team split (covered in Part 3).</li>
+<li>Hardware support grew too: a report says Vizor enabled shielded ZEC on Ledger devices in mid-September 2026, and Ledger Wallet added shielded Zcash support on September 23, 2026.</li>
+<li>Swaps: Zodl users can swap into and out of ZEC through cross-chain routes. Zodl said it facilitated more than $600 million in ZEC swaps since October 2025.</li>
+</ul>
+<h3>The number everyone watches: shielded supply</h3>
+<p>"Shielded supply" is the share of all ZEC stored in shielded pools. It is a better sign of real privacy use than price.</p>
+<table><tr><th>Time</th><th>Shielded share of supply</th></tr>
+<tr><td>Early 2024</td><td>about 8%</td></tr>
+<tr><td>Nov 2025 (Galaxy research)</td><td>more than 30% of ZEC shielded was reported by Galaxy; other trackers said ~23%</td></tr>
+<tr><td>May 2026 (CoinDesk)</td><td>roughly 30%, a record</td></tr>
+<tr><td>Q3 2026 (Messari/Blockworks)</td><td>about 29%, up from about 26% the quarter before; ~4.9M shielded ZEC</td></tr></table>
+<p>Notice that trackers <b>disagree</b>. One DefiLlama dashboard noted estimates of 4.41M to 5.12M shielded ZEC because trackers count pools differently. In this course we treat these as estimates, not exact numbers.</p>
+<div class="key"><b>Why price and shielded supply can move apart.</b> If someone buys ZEC on an exchange and leaves it there, the exchange holds it in a transparent address. Price can climb without a single coin moving into a shielded pool. A shielded share that rises while price is flat suggests real users, not just traders.</div>
+<h3>Other adoption signals</h3>
+<ul>
+<li>Shielded transactions hit a record 59.3% share in February 2026 while public ZEC transactions stayed flat near 8,500 a day (one report).</li>
+<li>Zcash has few full nodes: roughly 100 to 120 in a Galaxy snapshot, compared with about 4,000 for Monero and about 24,000 for Bitcoin. Fewer nodes can mean less decentralization.</li>
+<li>Cross-chain demand: ZEC became a swap option in NEAR Intents, which pulled in users from other chains (see Module 3).</li>
+</ul>
+<div class="think"><b>Pause and think:</b> If you wanted proof that Zcash privacy is really being used, which would you trust more: a 700% price rise or the shielded share of supply? Why?</div>
+`},
+{t:'Governance, funding & the ECC split',html:`
+<h2>Who Builds Zcash, and Who Pays Them?</h2>
+<p>Zcash has no CEO. Several groups build different pieces, and that structure has been tested hard.</p>
+<h3>The main groups</h3>
+<table><tr><th>Group</th><th>Role</th></tr>
+<tr><td>Electric Coin Company (ECC)</td><td>Created Zcash and Zashi. Overseen by a nonprofit board called Bootstrap.</td></tr>
+<tr><td>Zcash Open Development Lab (ZODL)</td><td>New company formed in 2026 by the former ECC engineering team, led by ex-CEO Josh Swihart. Builds protocol work and the Zodl wallet.</td></tr>
+<tr><td>Zcash Foundation</td><td>Nonprofit that maintains the Zebra node software and other public goods.</td></tr>
+<tr><td>Shielded Labs</td><td>Building Crosslink, a plan to add proof-of-stake to Zcash.</td></tr>
+<tr><td>Zcash Community Grants (ZCG)</td><td>A committee that funds projects with development money.</td></tr></table>
+<h3>How development has been paid</h3>
+<ul>
+<li><b>Founders' reward (2016-2020).</b> A slice of each block went to the founders and early backers.</li>
+<li><b>Dev Fund (from the Canopy upgrade, 2020).</b> A four-year fund replaced it.</li>
+<li><b>NU6 (2024).</b> Introduced "lockboxes," where some funds were held until the community decided how to spend them.</li>
+<li><b>NU6.1 (Nov 23, 2025).</b> Added a coinholder-directed retroactive grants program.</li>
+<li><b>ZIP-1016 (proposed).</b> A plan to send 8% to Zcash Community Grants and 12% to a coinholder-controlled fund. ECC and the Zcash Foundation would get no automatic share.</li>
+</ul>
+<div class="case"><h4>Case study: the January 2026 split</h4>
+<p>In January 2026 the entire ECC engineering and product team resigned after a governance dispute with the Bootstrap board. Reporting says the conflict was about control and about plans to monetize parts of the protocol, including the Zashi wallet. The engineers formed <b>ZODL</b>. In February 2026, Zashi became <b>Zodl</b>. On March 9, 2026, ZODL announced more than <b>$25 million</b> in seed funding from investors including Paradigm, a16z crypto, Winklevoss Capital and Coinbase Ventures.</p>
+<p><b>Lesson:</b> Zcash survived the split because the code and the chain do not belong to any one company. But the event showed how much depends on a few teams and how messy open-source governance can get.</p></div>
+<h3>Treasuries and institutions</h3>
+<p>Companies have started holding ZEC. Reports mention Cypherpunk Technologies with about 1.76% of supply, and Grayscale filed for a Zcash ETF on Nov 26, 2025. Big holders add liquidity but also create concentration and outflow risk. After the NU7 upgrade, trust outflows were one reason ZEC slid in early November 2026.</p>
+`},
+{t:'Upgrades & the roadmap',html:`
+<h2>The Upgrade Timeline and What Comes Next</h2>
+<p>Zcash ships changes as numbered <b>Network Upgrades (NU)</b>. A hard-fork upgrade means all nodes must install new software before a set block height.</p>
+<div class="tl">
+<div><b>NU5 (May 31, 2022)</b><br>Orchard pool, Halo 2, Unified Addresses.</div>
+<div><b>NU6 (2024)</b><br>Funding changes with lockboxes.</div>
+<div><b>NU6.1 (Nov 23, 2025)</b><br>Coinholder-directed retroactive grants.</div>
+<div><b>NU6.2 (June 3, 2026)</b><br>Emergency hard fork that re-enabled Orchard with a fixed circuit (see Part 5).</div>
+<div><b>NU7 (activated Nov 5, 2026, block 3,543,405)</b><br>The ninth upgrade. Blocks arrive every <b>25 seconds</b> instead of 75 (ZIP-218). Old v4 transactions are disabled. A <b>Network Sustainability Mechanism (NSM)</b> starts: 60% of each block's fees are removed from circulation into a public reserve, with reissuance beginning in 2031. There are also per-pool action limits. The halving schedule and daily issuance stay the same.</div>
+</div>
+<p>One outlet's NU7 coverage estimated a stale-block rate around 3.3% with the faster blocks. Shorter blocks can mean more "orphaned" blocks, which is a trade-off to watch.</p>
+<h3>What's being built next</h3>
+<ul>
+<li><b>Project Tachyon</b> (led by Zcash co-creator Sean Bowe): aims to scale shielded payments toward thousands of transactions per second using recursive proofs and "oblivious synchronization" so wallets stop scanning every transaction. Blockworks wrote that today's cryptography would force a node to process more than 500 MB of data per second at that load; aggregated proofs cut it to about 100 MB.</li>
+<li><b>Zakura</b>: new node software from Valar Group (led by Osmosis co-founder Dev Ojha) and Tachyon, shipped as the first layer of the scaling plan in Q3 2026.</li>
+<li><b>Zcash Shielded Assets (ZSA)</b>: user-made tokens inside the shielded pool. They were planned for the NU7 era and were demoed end to end in April 2026, but check current status before assuming they are live.</li>
+<li><b>Crosslink</b>: hybrid PoW/PoS design by Shielded Labs, with implementation audits reserved for 2026 on its roadmap.</li>
+<li><b>Quantum readiness</b>: work on quantum-recoverable wallets and lattice-based standards (ML-KEM, ML-DSA).</li>
+</ul>
+<div class="warn"><b>Be careful with roadmaps.</b> Dates in crypto slip often. A feature being "planned" is not a feature being "live."</div>
+`},
+{t:'Case study: the Orchard bug',html:`
+<h2>Case Study: The Orchard Soundness Bug (2026)</h2>
+<p>In late May 2026, security researcher Taylor Hornby, engaged by Shielded Labs, found a serious flaw in the Orchard circuit while using an AI auditing agent powered by Anthropic's Opus 4.8 model. The bug had been in the live code since Orchard launched on May 31, 2022, about four years.</p>
+<h3>What is a "soundness" bug?</h3>
+<p>A zero-knowledge system has two promises: <b>zero-knowledge</b> (secrets stay hidden) and <b>soundness</b> (nobody can prove a false statement). A soundness bug means someone could, in theory, create a proof that looks valid but is not, for example forging value. Privacy would stay intact, but the money supply could be inflated without anyone seeing it.</p>
+<div class="tl">
+<div><b>May 29, 2026</b><br>Flaw found.</div>
+<div><b>About June 1-2</b><br>An emergency soft fork disables Orchard.</div>
+<div><b>June 3</b><br>NU6.2 hard fork re-enables Orchard with a corrected circuit. (Sources differ slightly on exact dates and block heights.)</div>
+<div><b>June 4-5</b><br>Public disclosure. ECC-era engineers and ZODL (Josh Swihart) coordinated the response.</div>
+</div>
+<h3>What happened to the price?</h3>
+<p>ZEC fell about 30% to 50% in the scare, with more than $100 million in liquidations, then rebounded roughly 42%.</p>
+<h3>The hard question: was anything forged?</h3>
+<ul>
+<li>Nobody can <b>cryptographically prove</b> that no fake coins were made, because shielded data is hidden. That is the cost of privacy.</li>
+<li>The <b>turnstile</b> protects total supply: even forged value inside Orchard could not be withdrawn beyond what was deposited.</li>
+<li>Researchers judged active exploitation unlikely, and talk began of new pool accounting or migrating to a fresh pool.</li>
+</ul>
+<div class="key"><b>Lessons.</b> (1) Hidden ledgers are harder to audit, so extra safety nets like turnstiles matter. (2) Bugs can sit unseen for years. (3) A coordinated response (soft fork then hard fork) worked, but showed how few people hold the keys to emergency action. (4) AI tools are now finding deep bugs, which cuts both ways for defenders and attackers.</div>
+<div class="think"><b>Pause and think:</b> Why can't anyone simply "check the books" to see if Orchard was exploited? How does that compare with Bitcoin?</div>
+`},
+{t:'Market, Monero & risks',html:`
+<h2>The Market Story, the Monero Comparison and the Risks</h2>
+<h3>A big run, and big swings</h3>
+<ul>
+<li>Galaxy Research wrote in Nov 2025 that ZEC was up about 700% since September 2025 and had passed Monero in market value. Hyperliquid ZEC perpetuals had about $115M open interest.</li>
+<li>Reports show ZEC passing its January 2018 high in August 2026 (about $855) and trading above $1,000 in September. Always check live prices, because they move quickly.</li>
+<li>After the NU7 upgrade, ZEC fell about 14% and slipped to #11 by market value in early November 2026, as traders took profit, longs were liquidated and Grayscale trust outflows grew. About 29% of ZEC was shielded at that time.</li>
+<li>Futures volume has come close to $10 billion in a day, which means lots of leverage and fast moves.</li>
+</ul>
+<h3>Zcash vs Monero</h3>
+<table><tr><th></th><th>Zcash</th><th>Monero</th></tr>
+<tr><td>Privacy</td><td>Optional (shielded or transparent)</td><td>Always on</td></tr>
+<tr><td>Method</td><td>zk-SNARKs (Halo 2)</td><td>Ring signatures (ring of 16), stealth addresses</td></tr>
+<tr><td>Anonymity set</td><td>The shielded pool, but only ~30% of coins are in it</td><td>All users, but the ring is only 16 per spend (FCMP++ upgrade planned)</td></tr>
+<tr><td>Supply</td><td>21M cap</td><td>Tail emission, no cap</td></tr>
+<tr><td>Regulatory fit</td><td>Easier thanks to viewing keys</td><td>Harder; more exchange delistings</td></tr></table>
+<h3>Risk checklist</h3>
+<ul>
+<li><b>Opsec leaks.</b> Moving coins between transparent and shielded addresses can link you.</li>
+<li><b>Regulation.</b> Privacy coins face delistings and rules in some regions.</li>
+<li><b>Concentration.</b> A few teams and large holders shape direction and price.</li>
+<li><b>Technical risk.</b> The Orchard bug proved even mature cryptography can hide flaws.</li>
+<li><b>Few nodes.</b> A thin node count weakens decentralization.</li>
+<li><b>Volatility and leverage.</b> Forced selling can wipe out holders fast.</li>
+</ul>
+<div class="key"><b>Where Zcash fits in this course.</b> Zcash is the "original" and the anchor. NEAR gives it cross-chain demand, Starknet competes for private-DeFi use, Zano and Midnight offer different designs. You will see ZEC come up again.</div>
+`}
+],
+quiz:[
+Q('Where did the Zerocash research that led to Zcash come from?',['Johns Hopkins University','Stanford University','MIT Media Lab','Google'],0,'The Zerocash paper (2013) came from Johns Hopkins researchers.'),
+Q('Which pool launched on May 31, 2022 with Halo 2?',['Orchard','Sapling','Sprout','Heartwood'],0,'Orchard arrived with NU5 and removed the trusted-setup need.'),
+Q('How many ZEC will ever exist?',['21 million','100 million','Unlimited','84 million'],0,'Zcash follows a 21 million cap like Bitcoin.'),
+Q('What do t-addresses do?',['Work like Bitcoin with everything public','Hide amounts and senders','Only work for miners','Store NFTs'],0,'t-addresses are transparent. z-addresses are shielded.'),
+Q('What is the turnstile?',['A rule that stops coins leaving a pool beyond what went in','A fast-sync feature','A mining pool','A fee discount'],0,'It protects total supply even if a hidden bug creates fake value inside a pool.'),
+Q('Which wallet was launched in March 2024 and later renamed Zodl?',['Zashi','Ledger Live','Exodus','Ironclaw'],0,'Zashi became Zodl in February 2026 after the ECC team split.'),
+Q('The lesson says shielded share of supply was about what in early 2024?',['8%','30%','50%','0%'],0,'It rose from about 8% in early 2024 to around 30% in 2026.'),
+Q('Why can ZEC price rise even if shielded supply stays flat?',['Coins left on exchanges sit in transparent addresses','Shielded coins pay interest','Miners lock the supply','Shielded pools shut down in rallies'],0,'Exchange-held ZEC is transparent, so buying can lift price without raising shielded supply.'),
+Q('Roughly how many Zcash full nodes did Galaxy cite, compared with Monero\'s about 4,000?',['100 to 120','24,000','5 million','2,000'],0,'The thin node count is flagged as a decentralization concern.'),
+Q('Who led the new company ZODL?',['Josh Swihart','Vitalik Buterin','Sean Bowe','Illia Polosukhin'],0,'Swihart was ECC\'s CEO before founding ZODL.'),
+Q('What caused the ECC team to leave in January 2026?',['A governance dispute with the Bootstrap board, including plans to monetize parts of the protocol','A hack of the Zcash chain','A ban by exchanges','A merger with Monero'],0,'The engineers resigned after a dispute with Bootstrap about control and monetization.'),
+Q('How much seed funding did ZODL announce on March 9, 2026?',['More than $25 million','$2 million','$500 million','Nothing; it was self-funded'],0,'Investors included Paradigm, a16z crypto, Winklevoss Capital and Coinbase Ventures.'),
+Q('Under the proposed ZIP-1016, what share would go to Zcash Community Grants?',['8%','50%','1%','20% for ECC'],0,'ZIP-1016 proposes 8% to ZCG and 12% to a coinholder-controlled fund.'),
+Q('What did NU7 (activated Nov 5, 2026) do to block time?',['Cut it from 75 seconds to 25 seconds','Raised it to 10 minutes','Left it unchanged','Made it random'],0,'ZIP-218 shortened blocks to 25 seconds.'),
+Q('What does the Network Sustainability Mechanism do with block fees?',['Removes 60% of each block\'s fees from circulation into a public reserve','Burns 100% forever','Gives all fees to ECC','Sends fees to Monero'],0,'60% goes to a reserve, with reissuance planned from 2031.'),
+Q('What is Project Tachyon trying to do?',['Scale shielded payments toward thousands of transactions per second','Replace proof of work with ring signatures','Create a stablecoin','Shut down Sapling'],0,'It uses recursive proofs and oblivious synchronization to scale.'),
+Q('Who is Zakura built by?',['Valar Group and Project Tachyon','Google and Intel','Binance and Coinbase','The Zcash Foundation alone'],0,'Zakura is a joint project of Valar Group (Dev Ojha) and Project Tachyon (Sean Bowe).'),
+Q('What did the Orchard bug allow in theory?',['A false proof that could forge value without being seen','Anyone to read all shielded balances','Miners to reverse blocks','Free transaction fees'],0,'It was a soundness bug, so privacy stayed but fake value could theoretically be created.'),
+Q('How long had the Orchard bug been in the live code before discovery?',['About four years','Two days','Six months','Ten years'],0,'From May 31, 2022 to late May 2026.'),
+Q('Which fork re-enabled Orchard with a corrected circuit?',['NU6.2 on June 3, 2026','NU5 in 2022','Canopy in 2020','NU7 in November 2026'],0,'NU6.2 was the emergency hard fork after the soft fork disabled Orchard.'),
+Q('Why can no one prove that no fake ZEC was ever made?',['Shielded data is hidden, so the pool contents cannot be audited directly','The chain was reset','Miners erased the logs','The bug fix deleted history'],0,'Hidden ledgers cannot be directly audited. The turnstile limits the damage.'),
+Q('Compared with Zcash, Monero\'s privacy is:',['Always on, using ring signatures','Optional, using SNARKs','Only for miners','Based on TEEs'],0,'Monero hides everything by default with ring signatures and stealth addresses.'),
+Q('Which risk is highlighted when someone moves coins between transparent and shielded addresses?',['Links can leak and unmask the user','Fees triple','The coins are burned','Blocks stop'],0,'Matching in and out amounts and timing can link activity.'),
+Q('What happened to ZEC after NU7 in early November 2026?',['It fell about 14% and dropped to #11 by market cap','It tripled overnight','It was delisted everywhere','It became a stablecoin'],0,'Profit-taking, long liquidations and Grayscale trust outflows were cited.')
+]}
+,
+{id:'near',short:'NEAR',title:'Module 3: NEAR Protocol',kicker:'Module 3 · Project 2 of 5',
+parts:[
+{t:'What NEAR is (and is not)',html:`
+<h2>NEAR: Why Do People Call It a "Privacy Coin"?</h2>
+<div class="key"><b>Short answer:</b> NEAR is <b>not</b> a privacy coin. Its base chain is public like Ethereum's. People link NEAR to privacy because of things built <i>on and around</i> it: NEAR Intents, Confidential Intents, private AI inference in secure hardware, and its tie to Zcash swaps.</div>
+<h3>The basics</h3>
+<ul>
+<li>NEAR is a layer-1 blockchain started by <b>Illia Polosukhin</b> (a co-author of the famous "Attention Is All You Need" AI paper) and Alex Skidanov.</li>
+<li>It uses <b>sharding</b>, splitting the work across many pieces so the network can grow. A 2026 upgrade (v2.13) added automatic shard splitting and support for post-quantum signature keys (ML-DSA-65).</li>
+<li>It has readable account names like <i>alice.near</i> instead of long strings.</li>
+<li>Consensus is proof of stake. Validators and people who delegate lock NEAR to secure the network and earn rewards.</li>
+</ul>
+<h3>Three layers of the "privacy" story</h3>
+<table><tr><th>Layer</th><th>What it is</th><th>Does it hide data?</th></tr>
+<tr><td>NEAR Intents</td><td>Cross-chain swap system where you state what you want and others compete to fill it</td><td>No, by itself it is fully public</td></tr>
+<tr><td>Confidential Intents</td><td>A private version that hides who and how much for swaps and perps</td><td>Yes, partly (see Part 3)</td></tr>
+<tr><td>NEAR AI</td><td>Private AI chat and agents running in secure hardware</td><td>Yes, but with hardware trust (Part 4)</td></tr></table>
+<h3>Where this differs from Zcash</h3>
+<ul>
+<li>Zcash is its own chain with its own coin and its own proofs.</li>
+<li>NEAR mostly sells <b>privacy as a service</b> around swaps and AI, mixing cryptography with trusted hardware and a small group of operators.</li>
+<li>Bitwise analyst Camran Khosravi described NEAR and ZEC as <b>complements</b>: NEAR's confidential value can rise simply when ZEC's price rises, because more value sits in the pipes.</li>
+</ul>
+<div class="think"><b>Pause and think:</b> If a project's base chain is public but it offers private swaps, which of the four questions (what is hidden, optional or default, who can see, what can go wrong) matter most? Hold that thought for Part 3.</div>
+`},
+{t:'NEAR Intents',html:`
+<h2>NEAR Intents: The Engine Behind the Narrative</h2>
+<h3>What is an "intent"?</h3>
+<p>Instead of finding the right bridge, buying gas, and clicking five buttons, you say what you <b>want</b>: "I have 1,000 USDC on Ethereum and I want ZEC." That wish is the intent. <b>Solvers</b> (market makers and bots) compete to fill it at the best price, and the system settles the result for you.</p>
+<h3>How a swap flows</h3>
+<ol>
+<li>You deposit to an address on your source chain.</li>
+<li>Your intent is posted to the system, tracked by a smart contract on NEAR.</li>
+<li>Solvers compete; the best quote wins.</li>
+<li>The winner delivers the asset on the destination chain, and the contract settles.</li>
+</ol>
+<h3>Scale of the product</h3>
+<table><tr><th>Fact</th><th>Detail</th></tr>
+<tr><td>Chains supported</td><td>35+</td></tr>
+<tr><td>Assets supported</td><td>More than 100</td></tr>
+<tr><td>Cumulative volume</td><td>Passed $20B in June 2026 and about $29-30B by late September 2026</td></tr>
+<tr><td>Growth path</td><td>$5B (Nov 2025) to $10B (Jan 2026) to $20B+ (June 2026)</td></tr>
+<tr><td>Weekly volume</td><td>Reported near $842M in one September 2026 week</td></tr>
+<tr><td>Role in NEAR fees</td><td>Intents made up more than 95% of NEAR protocol fees since Nov 2025 (earlier reporting)</td></tr></table>
+<h3>The product around it</h3>
+<p>NEAR launched the <b>near.com</b> super-app on Feb 23, 2026, giving normal users swaps, payments and trading in one place. Intents also powers swaps inside other apps, like Zodl's route into ZEC.</p>
+<div class="case"><h4>How ZEC and NEAR got tied together</h4>
+<ul>
+<li>In Q4 2025, ZEC was about 20% of Intents volume as the Zcash rally pulled attention.</li>
+<li>In May 2026, support for sending and receiving ZEC through Intents grew, letting users swap more than 100 tokens into ZEC.</li>
+<li>Zodl and Intents work together: one 24-hour period showed about $3.8M across 458 transactions on the Zodl route.</li>
+<li>One analysis found a 30-day price correlation between NEAR and ZEC as high as about 0.77, which then loosened after May 11.</li>
+</ul></div>
+<div class="warn"><b>Important:</b> A plain Intents swap is not private. The deposit and the delivery are visible on-chain. Privacy needs the confidential layer in Part 3.</div>
+`},
+{t:'Confidential Intents',html:`
+<h2>Confidential Intents: Private Swaps and Perps</h2>
+<h3>Launch and design</h3>
+<p>NEAR announced <b>Confidential Intents on Feb 25, 2026</b>. "Phase 0" ran a <b>private shard</b> that hosts a single NEAR Intents contract. Some key points:</p>
+<ul>
+<li>Validators were <b>permissioned</b> (a chosen set, including firms like Node Monster).</li>
+<li>A bridge based on <b>TEEs</b> moved assets to and from mainnet.</li>
+<li>It supports 35+ chains.</li>
+</ul>
+<h3>What is hidden, and what is not</h3>
+<table><tr><th>Hidden</th><th>Still visible</th></tr>
+<tr><td>The origin wallet and routing trail</td><td>That a deposit and a settlement happened on public chains</td></tr>
+<tr><td>Order size, pair, direction and timing (inside the private shard)</td><td>The overall settlement is still auditable</td></tr>
+<tr><td>Your intent before it is filled</td><td>This is <i>not</i> private DeFi (no hidden lending balances)</td></tr></table>
+<p>The goal is to prevent <b>front-running</b> and <b>MEV</b> (profit squeezed out by those who can see and reorder pending trades).</p>
+<h3>The Sept 17, 2026 expansion</h3>
+<p>NEAR made <b>perps deposits and withdrawals confidential by default</b> on near.com. That hides the link between your funding wallet and your Hyperliquid trading account. When confidential TVL passed more than $70M, it triggered the first <b>NEAR@3.33 snapshot</b>: 333,333 milestone tokens unlock when the 3-day average price (VWAP) reaches $3.33.</p>
+<h3>Who can see your data?</h3>
+<p>This is the key question. In Phase 0:</p>
+<ul>
+<li>The set of operators is <b>permissioned</b>. You trust them not to leak or reorder things.</li>
+<li>TEEs protect data from the machine owner, but hardware has had flaws, and you trust the maker.</li>
+<li>Settlements stay auditable, which helps compliance but means privacy is <b>partial</b>.</li>
+</ul>
+<div class="key"><b>Key idea: privacy by trusted hardware vs by math.</b> Zcash and Starknet lean on zero-knowledge math that anyone can verify. Confidential Intents leans on trusted hardware plus a limited operator set. That can be faster and easier to ship, but the trust assumptions are different, and a hardware break could expose data.</div>
+<div class="think"><b>Pause and think:</b> If Confidential Intents hides your wallet link, but a limited operator group runs the private shard, who must you trust?</div>
+`},
+{t:'NEAR AI & private compute',html:`
+<h2>NEAR AI: Private Inference and Secure Agents</h2>
+<p>The other half of NEAR's privacy story is AI. When you chat with a normal AI service, the company can read your prompts. NEAR AI runs models inside <b>trusted execution environments</b> so that, as the pitch goes, even the machine's operator cannot read your data.</p>
+<h3>The parts</h3>
+<ul>
+<li><b>NEAR AI Cloud / private inference.</b> Uses Intel TDX and NVIDIA confidential computing so prompts and model data stay encrypted during use. It offers an OpenAI-style API.</li>
+<li><b>IronClaw.</b> An open-source agent runtime built in Rust that runs inside encrypted TEEs, launched with a free starter tier on Feb 23, 2026. It is meant for always-on agents that can browse, transact and automate while keeping keys and credentials sealed.</li>
+<li><b>Confidential GPU Marketplace.</b> Also launched Feb 23, 2026. A network where GPU owners rent out TEE-secured compute and receive hardware-signed proofs (attestations) in under 30 seconds. Customers can pay in NEAR or USDC.</li>
+<li><b>Intel Trust Authority (Aug 12, 2026).</b> NEAR AI Cloud added independent attestation, so Intel itself signs a proof that the job ran in a genuine secure environment.</li>
+<li>Partners and users mentioned include Corbits (a team agent workspace, July 2026) and Sigma Software.</li>
+</ul>
+<h3>What "attestation" means</h3>
+<p>An attestation is a signed receipt from the hardware saying "this exact code is running in this sealed environment." It lets a user verify the setup <b>without</b> trusting NEAR's word alone. It does <b>not</b> remove trust in the chip maker.</p>
+<h3>How this ties to the token</h3>
+<p>The hope is that AI customers pay in NEAR or USDC, creating demand. In July 2026 NEAR AI announced staking-based payments. As of today, though, token demand from AI is a plan more than a proven number. Treat usage claims as marketing until you see revenue data.</p>
+<div class="warn"><b>Be careful.</b> "Private AI" here means private from the <i>operator</i> of the servers. It does not mean private from a hardware vendor flaw, a bad app, or a leaky prompt you typed yourself.</div>
+`},
+{t:'Token, DeFi, value capture & risks',html:`
+<h2>NEAR Token, DeFi and Honest Risks</h2>
+<h3>Supply and inflation</h3>
+<ul>
+<li>NEAR is a proof-of-stake token. Staking rewards historically came from inflation of about 5% a year.</li>
+<li><b>Oct 2025:</b> inflation was halved to about 2.5%, cutting new supply from about 64M to about 32M NEAR per year. About 44% of supply was staked, roughly 571M NEAR (Datawallet).</li>
+<li><b>Nov 2, 2026:</b> the House of Stake governance body approved <b>HSP-029</b>, cutting the maximum annual issuance from 2.5% to 1.6%.</li>
+</ul>
+<h3>Does NEAR the token capture Intents value? Sources disagree.</h3>
+<table><tr><th>View</th><th>Claim</th></tr>
+<tr><td>Bull case (a DefiLlama dashboard)</td><td>An Intents fee switch was activated Feb 23, 2026, sending 100% of Intents fees to open-market NEAR buybacks. About $32M in cumulative fees.</td></tr>
+<tr><td>Skeptic case (a May 28, 2026 analysis)</td><td>Intents earned about $3.18M in fees over four weeks on $1.83B volume (roughly 17-19 basis points), NEAR protocol fees were only about 1.2% of Intents fees, and no buyback, burn or staking cut was documented.</td></tr></table>
+<p><b>Lesson:</b> when two reports disagree, check the dates and the official source. The data may have changed between the two, or the reports may be measuring different things. Never trust a single bullish thread.</p>
+<h3>Price and market</h3>
+<p>NEAR traded around $5.06 in late September 2026, after a low near $0.84 in February and a 2022 high of $20.44. Derivatives open interest rose from about $116M to $333M (futures volume was about three times spot at one point), so price moves can be violent. Bitwise has an ETF in registration for NEAR.</p>
+<h3>NEAR's own DeFi</h3>
+<ul>
+<li>NEAR's DeFi peaked near $481M in 2022, then fell. Its stablecoin USN was wound down.</li>
+<li>Base-chain DeFi liquidity was about $244M in late September 2026 with about $85.8M in stablecoins (Datawallet).</li>
+<li>Rhea Finance (formed from Ref Finance and Burrow) is the leading DeFi hub, with about $236M TVL, including Rhea Lend near $146.6M (Nov 2026 figures from DefiLlama).</li>
+</ul>
+<div class="key"><b>So does NEAR have DeFi?</b> Yes, but it is a modest part of the story. The big numbers are cross-chain swap volume and AI, not lending TVL on NEAR itself.</div>
+<h3>Risk checklist</h3>
+<ul>
+<li><b>Trusted hardware and permissioned operators</b> in the confidential layer.</li>
+<li><b>Value capture is unclear.</b> High volume does not automatically mean high token value.</li>
+<li><b>Correlation with ZEC.</b> The narrative rises and falls with a different asset.</li>
+<li><b>Bridge and solver risk.</b> Cross-chain systems are favorite hacker targets.</li>
+<li><b>Regulatory risk</b> if confidential swaps are judged to help hide illicit flows.</li>
+<li><b>Roadmap items.</b> A post-quantum plan announced in May 2026 was a roadmap item, not a shipped fix for everything.</li>
+</ul>
+`}
+],
+quiz:[
+Q('Is NEAR itself a privacy coin?',['No, its base chain is public; privacy comes from layers built around it','Yes, all NEAR transfers are hidden','Yes, it uses ring signatures','Only for staking'],0,'NEAR is a public chain. The privacy story comes from Confidential Intents and NEAR AI.'),
+Q('Who is a NEAR co-founder and co-author of "Attention Is All You Need"?',['Illia Polosukhin','Sean Bowe','Zooko Wilcox','Eli Ben-Sasson'],0,'Polosukhin co-founded NEAR and leads NEAR AI.'),
+Q('What does it mean to submit an "intent"?',['You state the outcome you want and solvers compete to fill it','You mine a block','You vote on governance','You freeze your coins'],0,'An intent is a request for an outcome. Solvers compete to deliver it.'),
+Q('Who are "solvers" in NEAR Intents?',['Market makers and bots that fill intents','Validators only','Government regulators','Wallet apps'],0,'Solvers compete to fill intents at the best price.'),
+Q('When did near.com launch?',['Feb 23, 2026','Jan 1, 2020','Dec 4, 2025','Sept 17, 2026'],0,'near.com launched Feb 23, 2026.'),
+Q('About how many chains does NEAR Intents connect?',['35+','3','500','Only NEAR'],0,'Reports say 35+ chains and 100+ assets.'),
+Q('Which share of Intents volume did ZEC reach in Q4 2025 according to the lesson?',['About 20%','About 1%','About 90%','0%'],0,'ZEC was about 20% of Intents volume as the Zcash rally drew attention.'),
+Q('When was Confidential Intents announced?',['Feb 25, 2026','June 9, 2026','Nov 5, 2026','Oct 13, 2026'],0,'Phase 0 launched with a private shard.'),
+Q('Who ran the validators in Confidential Intents Phase 0?',['A permissioned set of chosen validators','Anyone with 1 NEAR','Only Google','Miners'],0,'The set was permissioned, so you must trust those operators.'),
+Q('What is NOT hidden by Confidential Intents?',['That a deposit and settlement happened on public chains','The order size and pair','The routing trail from the origin wallet','Order timing inside the shard'],0,'Settlement stays auditable; the trail and order details are hidden.'),
+Q('What did the Sept 17, 2026 change do for perps?',['Made deposits and withdrawals confidential by default','Banned perps','Raised fees','Moved perps to Zcash'],0,'It hides the link between your funding wallet and your Hyperliquid account.'),
+Q('What triggers the NEAR@3.33 milestone unlock?',['The 3-day VWAP reaching $3.33','A governance vote','A Zcash upgrade','Intents volume of $100B'],0,'333,333 milestone tokens unlock on a 3-day VWAP of $3.33.'),
+Q('What is a TEE-based "attestation"?',['A signed proof the code runs in a genuine sealed environment','A password reset','A mining reward','A bridge fee'],0,'It lets users verify the setup without taking NEAR\'s word alone, though chip-maker trust remains.'),
+Q('Which two hardware technologies power NEAR AI private inference in the lesson?',['Intel TDX and NVIDIA confidential computing','AMD Ryzen and Apple M4','Ledger and Trezor','USB and HDMI'],0,'NEAR AI uses Intel TDX and NVIDIA confidential computing.'),
+Q('What is IronClaw?',['An open-source agent runtime that runs inside TEEs','A Zcash wallet','A stablecoin','A ring-signature library'],0,'IronClaw is built in Rust for secure always-on agents.'),
+Q('On Aug 12, 2026, NEAR AI Cloud added what?',['Intel Trust Authority independent attestation','A Zcash bridge','A new coin','A mining pool'],0,'Intel now signs an attestation token for verified workloads.'),
+Q('NEAR\'s annual inflation was cut from about 5% to about what in October 2025?',['2.5%','0%','10%','25%'],0,'The Oct 2025 cut halved issuance to about 2.5%.'),
+Q('What did HSP-029 (Nov 2, 2026) do?',['Cut maximum annual issuance from 2.5% to 1.6%','Banned staking','Launched Intents','Created a Zcash bridge'],0,'House of Stake approved the cut to 1.6%.'),
+Q('Why do the two value-capture reports on NEAR disagree?',['They claim different things about fees and buybacks, so check dates and official data','They are about different coins','One is about Bitcoin','Both say the same thing'],0,'One cites a 100% fee-to-buyback switch; the other cites small fees and no documented buyback.'),
+Q('Which NEAR DeFi hub is described as the leading one in the lesson?',['Rhea Finance (Ref + Burrow)','Aave','Uniswap','Vesu'],0,'Rhea Finance was formed from Ref Finance and Burrow.'),
+Q('What does "private AI" mostly protect against in NEAR AI?',['The server operator reading your data','All possible hardware flaws','Your own typing mistakes','Regulators'],0,'It protects from the machine\'s operator but not from every hardware or app risk.'),
+Q('Bitwise\'s Camran Khosravi described NEAR and ZEC as:',['Complements','Enemies','The same coin','Unrelated'],0,'NEAR\'s confidential TVL can rise just because ZEC rises.'),
+Q('Which statement is correct about a plain NEAR Intents swap?',['It is not private by itself; deposit and delivery are visible on-chain','It hides everything by default','It only works for ZEC','It uses ring signatures'],0,'Privacy requires the Confidential Intents layer.')
+]}
+,
+{id:'starknet',short:'Starknet',title:'Module 4: Starknet (STRK20 & private BTC)',kicker:'Module 4 · Project 3 of 5',
+parts:[
+{t:'What Starknet is',html:`
+<h2>Starknet: A ZK Rollup That Went All-In on Privacy</h2>
+<p>Starknet is a <b>layer-2</b> network on Ethereum built by <b>StarkWare</b>. A layer-2 (L2) does the heavy work off the main chain and posts proof that the work was done right. Starknet uses <b>STARK proofs</b>, the kind that need no trusted setup and are built on hash functions.</p>
+<h3>Why Starknet fits privacy</h3>
+<ul>
+<li>It already creates cryptographic proofs for every batch of transactions. Adding "prove this private transfer is valid" is a natural next step.</li>
+<li>Its prover, called <b>S-two</b>, is built to generate proofs fast, including on user devices.</li>
+<li>Accounts on Starknet are smart accounts (account abstraction), so wallets can add features like private flows without making users install a new wallet.</li>
+</ul>
+<h3>Who is behind it</h3>
+<p>StarkWare's CEO is <b>Eli Ben-Sasson</b>, who also co-founded Zcash and co-authored the original zk-SNARK-based Zcash research. His view: privacy is "private digital cash, the way it should be," and he expects zero-knowledge tools to help regulators act in a more targeted way instead of banning whole categories.</p>
+<h3>Starknet's privacy timeline in 2026</h3>
+<div class="tl">
+<div><b>Feb 26</b><br>strkBTC (private Bitcoin on Starknet) is unveiled.</div>
+<div><b>Mar 10</b><br>STRK20, a privacy framework for ERC-20 tokens, is announced.</div>
+<div><b>May 12</b><br>strkBTC goes live.</div>
+<div><b>June 9</b><br>STRK20 launches on mainnet.</div>
+<div><b>June 25</b><br>USDC is added to STRK20.</div>
+<div><b>Oct 13-14</b><br>Shadow Accounts launch for private DeFi activity.</div>
+</div>
+<div class="warn"><b>Spot the difference.</b> Zcash, Zano and Midnight are <i>their own chains</i>. Starknet is an Ethereum layer-2 that adds a privacy feature to tokens that already exist. It does not hide the whole chain.</div>
+`},
+{t:'STRK20 & the privacy pool',html:`
+<h2>STRK20: How the Privacy Pool Works</h2>
+<p><b>STRK20</b> is a token standard (a set of rules) that lets any ERC-20 token on Starknet have a private mode. StarkWare calls it "not a mixer," because it is built into the token layer rather than being a separate service.</p>
+<h3>One pool, many tokens</h3>
+<p>At the center is the <b>Starknet Privacy Pool</b>, a single contract that holds any ERC-20 (Bitcoin wrappers, stablecoins, ETH, STRK). When you <b>shield</b> a token you deposit it into the pool and it becomes an <b>encrypted note</b>. Inside the pool you can transfer, swap, or stake. When done, you <b>unshield</b> and move assets back to your normal public balance.</p>
+<h3>Step by step</h3>
+<ol>
+<li><b>Shield:</b> deposit; this deposit is visible on-chain.</li>
+<li><b>Transact:</b> private transfers inside the pool hide sender, recipient and amount. Proofs are generated on your side and checked by the network.</li>
+<li><b>Nullifiers</b> mark spent notes so nothing is spent twice.</li>
+<li><b>Unshield:</b> withdraw back to a public balance; this is visible too.</li>
+</ol>
+<p>Starknet says shielded transactions cost about <b>4 STRK</b> in its launch post, and the whole flow uses your existing signing key through account abstraction.</p>
+<h3>Private DeFi with existing liquidity</h3>
+<table><tr><th>Partner</th><th>Role</th></tr>
+<tr><td>Ekubo</td><td>Main DEX. Anonymous swaps settle against its normal public pools.</td></tr>
+<tr><td>avnu</td><td>Routes trades across venues and pays gas through a paymaster, hiding who pays fees.</td></tr>
+<tr><td>Vesu</td><td>Lending. Private lending was framed as a first-phase path.</td></tr>
+<tr><td>Endur</td><td>Liquid staking (including BTC staking)</td></tr></table>
+<div class="key"><b>What a private swap does and does not hide.</b> The pool withdraws tokens to a helper contract, the swap executes on Ekubo's public pool, and the result returns into the pool. The <b>token type and amount are visible</b> because they change the public pool. What stays hidden is <b>who</b> the trader was. Competitors: Aztec (a separate private world), RAILGUN (trades visible), Zama, and others.</div>
+<h3>Shadow Accounts (Oct 13, 2026)</h3>
+<p>Shadow Accounts give users <b>persistent, separate addresses for each DeFi app</b>, funded from shielded balances. The link between your main wallet and the app activity is broken. But there is a limit: the <b>balances, transactions and positions of the shadow account itself remain public</b>. The first live integration was a Vesu Prime vSTRK vault, with the new tools Wallet API 0.10.4 and starknet.js 10.8.0.</p>
+<div class="think"><b>Pause and think:</b> If your shadow account shows a big position publicly, but nobody knows it is yours, is that "private"? It hides the link, not the position. Keep that difference in mind.</div>
+`},
+{t:'strkBTC: private Bitcoin',html:`
+<h2>strkBTC: Private Bitcoin on Starknet</h2>
+<p>A common question is whether Bitcoin itself can be used privately on Starknet. Here is the answer. <b>strkBTC</b> is an ERC-20 version of Bitcoin on Starknet, backed 1:1 by BTC. It was unveiled Feb 26, 2026 and went <b>live May 12, 2026</b>.</p>
+<h3>Public mode and shielded mode</h3>
+<ul>
+<li><b>Public mode:</b> works like any token.</li>
+<li><b>Shielded mode:</b> uses the STRK20 privacy pool to hide who holds and sends it.</li>
+</ul>
+<h3>How BTC gets in and out</h3>
+<ul>
+<li>Bridge routes named in launch coverage: strkbtc.io (powered by Atomiq), atomiq.exchange and Garden Finance.</li>
+<li>Swaps use avnu. A paymaster can hide who pays fees.</li>
+<li>Wallets: Xverse and Ready.</li>
+<li>Users can <b>re-anonymize</b> and bridge back to a brand-new, unlinked BTC address.</li>
+</ul>
+<h3>What you can do with it (DeFi)</h3>
+<ul>
+<li><b>Vesu:</b> borrow stablecoins against strkBTC.</li>
+<li><b>Ekubo:</b> trade and provide liquidity in strkBTC pools.</li>
+<li><b>Endur:</b> liquid staking that creates xstrkBTC.</li>
+</ul>
+<h3>Who guards the bitcoin? (Trust model)</h3>
+<p>This part matters. The bridge is currently <b>federated</b>, run by a group that includes Twinstake, NEAR Intents, Luganodes, UTXO and Xverse. That means you trust a group of operators to hold the real BTC. The roadmap says it will move to a <b>BitVM-style 1-of-N</b> setup (only one honest member is needed), then to proofs verified on Bitcoin itself, which may need a Bitcoin soft fork such as OP_CAT.</p>
+<div class="warn"><b>Trust gap.</b> Bitcoin itself does not verify Starknet proofs today. Any "private Bitcoin" system outside Bitcoin depends on a bridge. If the bridge fails, the wrapped coin can lose its backing, no matter how good the privacy is.</div>
+<h3>Compliance built in</h3>
+<ul>
+<li>Viewing keys are encrypted and registered with a <b>threshold-controlled third-party auditor</b>.</li>
+<li>On a lawful request, a "scoped unshielding" can reveal specific activity.</li>
+<li>There is asset screening to block bad funds from entering.</li>
+</ul>
+<p>The team also lists quantum-resistance research on its roadmap.</p>
+`},
+{t:'Compliance design & who sees what',html:`
+<h2>Compliance: Layered Auditability</h2>
+<p>STRK20 tries to answer the regulator's question up front. StarkWare describes <b>layers of visibility</b>:</p>
+<table><tr><th>Who</th><th>Can see</th></tr>
+<tr><td>The user</td><td>Their own notes and history</td></tr>
+<tr><td>Wallets or custodians</td><td>What the user chooses to share or what is required</td></tr>
+<tr><td>An independent oversight entity</td><td>Conditional decryption of data when disclosure is mandatory, often a blockchain-analytics provider</td></tr>
+<tr><td>The public</td><td>Only deposits and withdrawals, plus public state like swap amounts</td></tr></table>
+<h3>Strengths</h3>
+<ul>
+<li>It lets banks, funds and payments firms consider using public chains.</li>
+<li>It shows regulators a path other than "ban it."</li>
+<li>Private swaps use existing liquidity instead of a thin new pool.</li>
+</ul>
+<h3>Weak spots and open questions</h3>
+<ul>
+<li><b>Who runs the oversight entity?</b> Public coverage did not name who operates the pool's oversight function. Disclosure being mandatory means privacy is conditional.</li>
+<li><b>Visible edges.</b> Deposits and withdrawals are public, so timing and size matching can link you.</li>
+<li><b>Anonymity set.</b> Privacy is stronger with more users in the pool.</li>
+<li><b>Operational claims.</b> Starknet cites latency improvements (about 2 seconds to about 500 ms), very low fees and throughput gains (about 500 to 1,000+ TPS, aiming at 10,000). These are the team's numbers.</li>
+</ul>
+<div class="case"><h4>Starknet vs the other approaches in this course</h4>
+<p><b>Zcash:</b> separate chain, math-only privacy, hides amounts and parties, optional. <b>Starknet:</b> layer-2 pool with an oversight layer, amounts visible in swaps. <b>NEAR:</b> trusted hardware and permissioned operators. <b>Zano:</b> default-on privacy for everything on its chain. <b>Midnight:</b> private smart contracts with selective disclosure.</p></div>
+<p>CertiK counted 34 wrench attacks in early 2026 (up 41%), a reminder that hiding balances also has a safety value for ordinary holders.</p>
+`},
+{t:'Risks & outages',html:`
+<h2>Risks and What Could Go Wrong</h2>
+<ul>
+<li><b>Bridge risk.</b> A federated BTC bridge is a trust bet until the roadmap steps ship.</li>
+<li><b>Sequencer and uptime.</b> Starknet has had a brief mainnet outage with a published post-mortem. Layer-2s depend on a small set of block producers today.</li>
+<li><b>Proof and code bugs.</b> A flaw in the pool contract or circuits could be severe. Private pools are harder to audit from the outside, as the Zcash Orchard bug showed.</li>
+<li><b>Public edges.</b> Linking attacks on deposit and withdraw events.</li>
+<li><b>Oversight trust.</b> A conditional-decryption party must be trustworthy and well governed.</li>
+<li><b>Competition.</b> Aztec, RAILGUN, Zama, Solana confidential transfers and other approaches target the same users.</li>
+<li><b>Quantum.</b> In October 2026 StarkWare reportedly considered turning Starknet into an L1 because of the quantum threat. The research is ongoing.</li>
+<li><b>Regulation.</b> Even with viewing keys, authorities may treat any pool with strong privacy as high risk.</li>
+</ul>
+<h3>Questions to ask about any "private" feature</h3>
+<ol>
+<li>Is the pool shared or siloed? Bigger is better.</li>
+<li>What is visible at the edges?</li>
+<li>Who holds the keys for disclosure?</li>
+<li>What happens if the bridge fails?</li>
+<li>Has it been audited, and are the audits public?</li>
+</ol>
+<div class="key"><b>Bottom line.</b> Starknet's pitch is "privacy that works inside existing DeFi and passes a compliance check." Its biggest unknowns are adoption, the trust model for BTC, and how regulators react.</div>
+`}
+],
+quiz:[
+Q('What kind of network is Starknet?',['An Ethereum layer-2 using STARK proofs','A Bitcoin sidechain','A proof-of-work chain','A Cardano fork'],0,'Starknet is an Ethereum L2 built by StarkWare using STARKs.'),
+Q('What is the name of Starknet\'s prover?',['S-two','Halo 2','Kachina','Ironclaw'],0,'S-two is StarkWare\'s prover.'),
+Q('Who is StarkWare\'s CEO and a Zcash co-founder?',['Eli Ben-Sasson','Josh Swihart','Hoskinson','Polosukhin'],0,'Ben-Sasson co-founded Zcash and leads StarkWare.'),
+Q('When did STRK20 go live on mainnet?',['June 9, 2026','Feb 26, 2026','Oct 13, 2026','Dec 4, 2025'],0,'It was announced Mar 10 and launched June 9, 2026.'),
+Q('What is STRK20?',['A token standard that lets ERC-20 tokens have a private mode','A new Bitcoin fork','A mining chip','A governance token'],0,'It is a privacy standard for ERC-20 assets.'),
+Q('What happens when you "shield" a token?',['You deposit it into the privacy pool, where it becomes an encrypted note','You burn it','You send it to a miner','You convert it to ETH'],0,'Shielding deposits into the pool and creates an encrypted note.'),
+Q('What stays visible when you shield or unshield?',['The deposit and withdrawal events','Nothing at all','Only your name','Only the fee'],0,'The edges of the pool are public.'),
+Q('In a private swap on Ekubo, what is still public?',['The token type and amount','The trader\'s identity','Both sides\' names','Nothing'],0,'The swap changes public pool state, so token and amount stay visible. Identity can stay hidden.'),
+Q('What does avnu\'s paymaster do?',['Pays gas so the fee payer is not exposed','Mines Bitcoin','Verifies Zcash proofs','Sets governance'],0,'The paymaster hides who pays fees and enables gasless private flows.'),
+Q('What did Shadow Accounts (Oct 13, 2026) create?',['Persistent separate addresses per DeFi app, funded from shielded balances','A new blockchain','A new stablecoin','A hardware wallet'],0,'They break the link to the main wallet.'),
+Q('What remains public about a Shadow Account?',['Its balances, transactions and positions','Nothing','The owner\'s name','Only the fee'],0,'Only the link to the main wallet is hidden.'),
+Q('When did strkBTC go live?',['May 12, 2026','Feb 26, 2026','June 25, 2026','Oct 14, 2026'],0,'It was unveiled Feb 26 and live May 12, 2026.'),
+Q('strkBTC is backed by what?',['BTC held 1:1 through a bridge','Gold','USDC only','Nothing'],0,'It is an ERC-20 backed 1:1 by BTC.'),
+Q('How is the strkBTC bridge secured today?',['A federated group of operators','A single bank','Bitcoin miners directly','Full on-chain proofs verified on Bitcoin'],0,'It is federated now, with a roadmap toward BitVM-style and proof-based verification.'),
+Q('Which Bitcoin change might the final bridge step need?',['A soft fork such as OP_CAT','A hard fork to 100M coins','A halving','Nothing'],0,'The roadmap mentions possible Bitcoin soft fork support like OP_CAT.'),
+Q('Which DeFi app lets you borrow stablecoins against strkBTC?',['Vesu','Ekubo','Endur','avnu'],0,'Vesu is the lending market.'),
+Q('Who can see decrypted data under STRK20\'s oversight layer?',['An independent oversight entity under conditional decryption','Everyone','Only miners','Nobody ever'],0,'Disclosure is mandatory when conditions are met.'),
+Q('What is the cost of a shielded transaction cited by Starknet\'s launch post?',['About 4 STRK','About $500','Free forever','About 1 BTC'],0,'The launch post said shielded transactions cost 4 STRK.'),
+Q('Which is a listed risk of STRK20?',['Public edges can leak links via timing and size','The pool is too large','It uses proof of work','It has no code'],0,'Matching deposits and withdrawals can reveal links.'),
+Q('Which competitor is described as having trades visible?',['RAILGUN','Zcash','Zano','Midnight'],0,'RAILGUN\'s trades are visible per the comparison.'),
+Q('Why can zk proofs make privacy easier on Starknet than elsewhere?',['It already proves every batch, so private proofs fit its design','It has no users','It uses ring signatures','It avoids Ethereum'],0,'STARKs are already central to Starknet.'),
+Q('What does a "trust gap" mean for strkBTC?',['The wrapped coin depends on the bridge keeping the real BTC safe','The coin cannot be shielded','The coin is free','Bitcoin verifies Starknet today'],0,'If the bridge fails, backing can be lost regardless of privacy quality.')
+]}
+,
+{id:'zano',short:'Zano',title:'Module 5: Zano (ZANO)',kicker:'Module 5 · Project 4 of 5',
+parts:[
+{t:'Origins & design',html:`
+<h2>Zano: Privacy by Default, Built for Private Assets</h2>
+<p>Zano is its own layer-1 blockchain with <b>privacy on by default</b>. It descends from the <b>CryptoNote</b> family (the same family that Monero comes from) but it is a separate project with its own upgrades.</p>
+<h3>History</h3>
+<ul>
+<li>It was created by a developer known as <b>Andre</b>, one of the people behind the original CryptoNote protocol. Earlier he built <b>Boolberry</b>, and the lessons from that project shaped Zano.</li>
+<li>Work began around 2015 and the network launched in <b>2019</b>.</li>
+<li>In early 2024 the <b>Zarcanum</b> hard fork (around block 2,555,000) arrived. It brought the two features Zano is known for: <b>private proof-of-stake</b> and <b>Confidential Assets</b>.</li>
+</ul>
+<h3>The tech stack, in plain words</h3>
+<table><tr><th>Piece</th><th>What it does</th></tr>
+<tr><td>Ring signatures (d/v-CLSAG)</td><td>Hide which input is real. An improved design based on Monero's d-CLSAG. Audited by Cypher Stack.</td></tr>
+<tr><td>Stealth addresses</td><td>One-time receive addresses so payments are not linked to one address.</td></tr>
+<tr><td>Hidden amounts</td><td>Amounts are concealed, so outsiders cannot see how much moved.</td></tr>
+<tr><td>Hybrid consensus</td><td>Proof of Work (ProgPowZ mining) combined with Proof of Stake.</td></tr>
+<tr><td>Zarcanum</td><td>Lets stakers stake <b>without revealing the staked amount</b>. Zano calls it the first private PoS.</td></tr></table>
+<div class="key"><b>Key idea.</b> Most privacy coins hide payments. Zano also hides <b>staking</b>, and it hides <b>what kind of token</b> moved. That last point is the Confidential Assets feature in Part 2.</div>
+<h3>How Zano differs from Zcash and Monero</h3>
+<ul>
+<li><b>Zcash:</b> optional privacy, SNARKs. <b>Zano:</b> default privacy, ring signatures.</li>
+<li><b>Monero:</b> a single coin. <b>Zano:</b> a base coin plus a system for many private tokens.</li>
+<li><b>Zano is not an Ethereum-style smart-contract chain.</b> Its official FAQ says no general smart contracts. One article we saw referred to "Zano Smart Contracts," so sources conflict. Treat it as an open question and verify on Zano's own docs.</li>
+</ul>
+`},
+{t:'Confidential Assets & the ecosystem',html:`
+<h2>Confidential Assets and the Ecosystem</h2>
+<h3>What is a Confidential Asset?</h3>
+<p>Anyone can issue a token on Zano and it <b>inherits the same privacy</b> as ZANO: hidden amounts, hidden addresses and hidden asset type. Think of it as launching an ERC-20 where every holder's balance is private by default. About 750 assets had been created by the time of the research we used. The reported cost to create one was around <b>0.01 ZANO</b> (about seven euro cents at the time) and about a minute.</p>
+<h3>Notable assets and apps</h3>
+<table><tr><th>Name</th><th>What it is</th></tr>
+<tr><td>FUSD (Freedom Dollar)</td><td>A private dollar-style token on Zano. It was used at the Porcupine Festival.</td></tr>
+<tr><td>Confidential Layer</td><td>A non-custodial bridge idea producing private versions of assets like BTC (BTCX), ETH and SOL.</td></tr>
+<tr><td>Obscura</td><td>Privacy-first NFTs.</td></tr>
+<tr><td>Zano Trade</td><td>A marketplace with no registration; orders are matched on-chain with Ionic Swaps.</td></tr>
+<tr><td>Zano Companion</td><td>A browser extension wallet for web apps.</td></tr>
+<tr><td>Other tools</td><td>Aliases (@username style names), atomic swaps, multisig, a lite wallet in beta.</td></tr>
+<tr><td>Payments</td><td>Bitcoin.com Checkout listed ZANO and fUSD on June 3, 2026. The Zeek project linked Zano to a Mastercard-network debit card.</td></tr></table>
+<h3>On-chain voting</h3>
+<p>Zano supports governance voting where staked coins count as votes. One example was deciding whether to whitelist assets.</p>
+<h3>Listing costs claim</h3>
+<p>Zano's team has claimed that top-tier exchange listings can cost between about €500,000 and €1 million. This is a claim from the team and has not been independently confirmed here.</p>
+<div class="think"><b>Pause and think:</b> If every token on a chain has hidden holders, who benefits (privacy users) and who might worry (regulators, exchanges)? What does that mean for where ZANO can be listed?</div>
+`},
+{t:'The ZANO token',html:`
+<h2>The ZANO Token and How It Ties In</h2>
+<h3>What ZANO is used for</h3>
+<ul>
+<li><b>Fees.</b> Network fees are paid in ZANO. Fees are <b>burned</b>, so they permanently leave supply.</li>
+<li><b>Staking.</b> Holders stake ZANO to help secure the chain and earn rewards. The team claims roughly 70-80% of supply was staked.</li>
+<li><b>Creating assets.</b> Issuing a Confidential Asset costs ZANO.</li>
+<li><b>Voting.</b> Staked ZANO carries governance weight.</li>
+<li><b>Base pair.</b> It is the main trading pair for Zano Trade and other assets on the network.</li>
+</ul>
+<h3>Supply</h3>
+<table><tr><th>Fact</th><th>Detail</th></tr>
+<tr><td>Emission</td><td>A tail emission of 1 ZANO per block (about one per minute), not a hard cap</td></tr>
+<tr><td>Premine</td><td>20% reserved for development</td></tr>
+<tr><td>Fees</td><td>Burned</td></tr>
+<tr><td>Circulating supply</td><td>About 15.3M in mid-2026</td></tr></table>
+<h3>Price notes</h3>
+<ul>
+<li>All-time high of $17.81 on January 7, 2025.</li>
+<li>Around $7-10 and a $140-150M market cap in February-March 2026.</li>
+<li>Daily volume was only about $1.3M in early June 2026, so Zano is a <b>thin</b> market that can gap quickly.</li>
+<li>When the exploit was disclosed in late September, 100 ZANO was worth about $553, or roughly $5.50 each.</li>
+</ul>
+<div class="key"><b>How Zano fits the privacy narrative.</b> Zano is the "privacy-native asset layer": private by default, with a built-in way to launch private tokens. The bet is that stablecoins and assets of all kinds will want privacy, and Zano can host them without bolting on a mixer. The risk is liquidity, listings and trust.</div>
+`},
+{t:'Case study: the Gateway exploit',html:`
+<h2>Case Study: The Gateway Address Exploit (Aug-Sept 2026)</h2>
+<p>This is the most important Zano event for a student to understand, because it shows how a <b>new feature</b> can break a hardened privacy chain.</p>
+<h3>Background: Gateway Addresses</h3>
+<p>Hard Fork 6 activated on <b>August 26, 2026</b> at block 3,833,000. It introduced <b>Gateway Addresses</b>, an address type meant to make exchanges, bridges and payment processors easier to support by giving them an account-style balance while keeping Zano's privacy. The team had worked on it for over a year.</p>
+<div class="tl">
+<div><b>Aug 26</b><br>HF6 and Gateway Addresses go live.</div>
+<div><b>Aug 29</b><br>The attacker creates about 18.4 million ZANO in a single transaction.</div>
+<div><b>Sept 25</b><br>The same method mints another 18.4 million, for about <b>36.9 million</b> unauthorized ZANO in total. Unauthorized fUSD also appeared.</div>
+<div><b>Late Sept</b><br>Zano tells people to pause economic activity, then restarts the chain from block 3,833,000, the last block before HF6. About a month of history is erased, and Gateway Addresses are disabled. Coverage says this restart came with a "Hard Fork 7."</div>
+<div><b>Oct 1-2</b><br>A post-mortem confirms two minting events. The attacker paid just 100 ZANO (about $553) to set up the exploit.</div>
+</div>
+<h3>What went wrong?</h3>
+<ul>
+<li>A <b>validation flaw</b> in the Gateway Address logic let an attacker create coins the network accepted as genuine. The coins had the same spending properties as real ones.</li>
+<li>Zano said <b>AI-assisted testing, internal audits and bug bounties all missed it</b>.</li>
+<li>The team said <b>wallet spend keys and the network's privacy features stayed secure</b>.</li>
+</ul>
+<h3>Why a rollback?</h3>
+<p>Because hidden amounts make fake coins hard to spot and impossible to freeze, the team judged that the only way to restore the intended supply was to rewind. The cost: legitimate transactions, staking rewards and mined blocks from that month vanished. A Zano team member quoted in reports (van Welzen) admitted the team did not understand the scope when it first promised a 24-hour fix, and that the rollback "costs trust."</p>
+<h3>The headline number problem</h3>
+<p>One headline claimed "over $200 million in illicit tokens." That is simple arithmetic: 36.9M tokens times about $5.50 is about $200M <i>on paper</i>. But the market was thin, so the attacker could never have cashed that much out. Several reports said the exact amount of funds actually taken was not disclosed. Learn to separate <b>paper value</b> from <b>real loss</b>.</p>
+<div class="key"><b>Lessons.</b> (1) New features are the riskiest code. (2) Privacy makes supply bugs harder to detect, so extra checks (like Zcash's turnstile) matter. (3) Rollbacks fix supply but break the "immutable ledger" promise. (4) Audits and bug bounties help but do not guarantee safety. (5) A full technical post-mortem and compensation details were still pending in early coverage, so check for updates.</div>
+`},
+{t:'Roadmap, risks & comparison',html:`
+<h2>Roadmap, Risks and How Zano Compares</h2>
+<h3>Roadmap items you may see</h3>
+<ul>
+<li>Earlier plans listed <b>Hard Fork 7</b> as the move to full proof-of-stake (about 22-second blocks, around 3 confirmations, under 1 minute finality, targeted for Q3 2026). After the exploit, coverage used "Hard Fork 7" for the chain restart, so <b>the original HF7 plan status is unclear</b>. Verify before repeating it.</li>
+<li>Gateway Addresses stay off until a technical review finishes.</li>
+<li>Wallet and payments work continues: Lite Wallet beta, Companion, Checkout integrations.</li>
+</ul>
+<h3>Risk checklist</h3>
+<ul>
+<li><b>Code risk.</b> The Gateway exploit proved it.</li>
+<li><b>Trust after a rollback.</b> Users and exchanges must regain confidence.</li>
+<li><b>Thin liquidity.</b> About $1.3M a day (early June 2026) means big swings.</li>
+<li><b>Listing and regulatory risk.</b> Default-private assets are a tough fit for compliant exchanges.</li>
+<li><b>Team and concentration.</b> A 20% premine and a small core team.</li>
+<li><b>Claims to verify.</b> Staking percentage, listing fees, and a "recent exploit" mention on one data site before the Gateway event.</li>
+</ul>
+<h3>Comparison table</h3>
+<table><tr><th></th><th>Zcash</th><th>Zano</th><th>Midnight</th></tr>
+<tr><td>Privacy</td><td>Optional</td><td>Default</td><td>Private by design with disclosure</td></tr>
+<tr><td>Core tech</td><td>zk-SNARKs</td><td>Ring signatures, hidden amounts</td><td>zk-SNARKs, TypeScript-style contracts</td></tr>
+<tr><td>Token support</td><td>ZSA planned</td><td>Confidential Assets live</td><td>Private contracts, NIGHT/DUST</td></tr>
+<tr><td>Smart contracts</td><td>No</td><td>No general (per FAQ)</td><td>Yes</td></tr></table>
+<div class="think"><b>Pause and think:</b> Which would you trust more to hold a private stablecoin: a chain with default privacy and thin liquidity, or one with optional privacy and deep liquidity? What are you giving up either way?</div>
+`}
+],
+quiz:[
+Q('Which family of technology does Zano descend from?',['CryptoNote','Zerocash','TEE chips','Ethereum rollups'],0,'Zano comes from the CryptoNote lineage, like Monero.'),
+Q('When did Zano launch?',['2019','2009','2024','2026'],0,'Work started around 2015 and the network launched in 2019.'),
+Q('What did the Zarcanum hard fork introduce?',['Private proof-of-stake and Confidential Assets','Ethereum compatibility','Optional privacy','A 21M hard cap'],0,'Zarcanum hid staked amounts and added Confidential Assets.'),
+Q('What is the mining algorithm used in Zano\'s hybrid consensus?',['ProgPowZ','Equihash','SHA-256','Ethash'],0,'Zano combines ProgPowZ PoW with PoS.'),
+Q('What does a Confidential Asset inherit?',['Hidden amounts, addresses and asset type','Public balances','A bank license','Ring size 1'],0,'Any asset issued on Zano gets the same privacy as ZANO.'),
+Q('Roughly how many Confidential Assets had been created in the research?',['About 750','About 5','About 50,000','Zero'],0,'The research cited about 750 assets.'),
+Q('What is FUSD?',['Freedom Dollar, a private dollar-style token on Zano','A Zcash tool','A Bitcoin ETF','A mining pool'],0,'FUSD was used at the Porcupine Festival.'),
+Q('What does Zano Trade use to match orders?',['Ionic Swaps on-chain','A central bank','Email','Ring ads'],0,'Zano Trade is a no-registration marketplace using Ionic Swaps.'),
+Q('What happens to ZANO fees?',['They are burned','They go to a company','They are refunded','They go to Monero'],0,'Fees are burned and leave supply.'),
+Q('What is Zano\'s emission design?',['Tail emission of about 1 ZANO per block','A hard cap of 21M','No new coins','Halving every year'],0,'Zano has a tail emission rather than a hard cap.'),
+Q('When was Hard Fork 6 activated?',['August 26, 2026','Jan 7, 2025','Nov 5, 2026','March 9, 2026'],0,'HF6 introduced Gateway Addresses at block 3,833,000.'),
+Q('What were Gateway Addresses meant to do?',['Make exchange and bridge integration easier with account-style balances','Hide miners','Replace ring signatures','Burn fees'],0,'They were an integration feature that kept privacy.'),
+Q('On Aug 29, 2026, how many unauthorized ZANO did the attacker create in one transaction?',['About 18.4 million','About 100','About 1 billion','Zero'],0,'The same method was repeated Sept 25 for another 18.4M.'),
+Q('Total unauthorized ZANO created across both events?',['About 36.9 million','About 18.4 thousand','About 920 million','About 4 million'],0,'18.4M twice is about 36.9M.'),
+Q('How much did the attacker pay to set up the exploit?',['100 ZANO (about $553)','10,000 ZANO','1 ZANO','Nothing'],0,'The post-mortem said 100 ZANO.'),
+Q('What did Zano do to restore the intended supply?',['Restarted the chain from block 3,833,000, before HF6','Froze the exchange','Deleted all addresses','Printed a new coin'],0,'About a month of history was erased and Gateway Addresses were disabled.'),
+Q('Which statement was reported about wallet keys?',['No compromise of wallet spend keys was found','All keys were stolen','Keys were rotated automatically','Keys were public'],0,'Zano said wallet spend keys and privacy features remained secure.'),
+Q('Why is the "$200M illicit tokens" headline misleading?',['It is paper value; a thin market means it could not all be sold','Zano has no price','The tokens were never created','Dollars are banned'],0,'36.9M tokens times about $5.50 is paper value, not real cash-out.'),
+Q('What did Zano say failed to catch the bug?',['AI-assisted testing, audits and bug bounties','Miners','Exchanges','Regulators'],0,'All three before HF6 missed the validation flaw.'),
+Q('Why is the original Hard Fork 7 roadmap status described as unclear?',['Coverage later used "Hard Fork 7" for the chain restart','Zano deleted its roadmap','It was never planned','It launched in 2020'],0,'The original HF7 meant full PoS; later coverage used the name for the restart.'),
+Q('Which statement about Zano smart contracts matches the lesson?',['The official FAQ says no general smart contracts, but one source claimed otherwise','Zano is Ethereum compatible','Smart contracts are required for ZANO','Zano contracts run on TEEs'],0,'Sources conflict, so verify.'),
+Q('What did the lesson say about ZANO trading volume in early June 2026?',['About $1.3M a day, a thin market','About $500M a day','Zero','About $10B a day'],0,'Thin liquidity can cause quick swings.')
+]}
+,
+{id:'midnight',short:'Midnight',title:'Module 6: Midnight (NIGHT & DUST)',kicker:'Module 6 · Project 5 of 5',
+parts:[
+{t:'What Midnight is',html:`
+<h2>Midnight: Private Smart Contracts with Selective Disclosure</h2>
+<p>Midnight is a blockchain built by <b>Input Output Global (IOG)</b>, the company behind Cardano, with <b>Charles Hoskinson</b> as its public face. It is designed for <b>"data protection"</b> instead of full anonymity: apps can keep data private but still prove things about it and reveal facts to chosen parties.</p>
+<h3>The big idea: two kinds of state</h3>
+<table><tr><th>Public state</th><th>Private state</th></tr>
+<tr><td>A UTXO-style public ledger (like Bitcoin and Cardano). Anyone can verify it.</td><td>Account-style private execution. Your private data stays on <b>your own device</b>.</td></tr></table>
+<ul>
+<li>A <b>local proof server</b> on your machine creates a zk-SNARK showing the rules were followed. Only the proof goes on-chain, not your data.</li>
+<li>The design comes from a 2020 research paper called <b>Kachina</b>.</li>
+</ul>
+<h3>Building apps</h3>
+<ul>
+<li><b>Compact</b> is Midnight's smart-contract language. It is TypeScript-based so ordinary web developers can use it.</li>
+<li>Developers choose which fields are public, private, or disclosed to a specific party.</li>
+</ul>
+<h3>Under the hood</h3>
+<ul>
+<li>Built with the Substrate framework (used by Polkadot).</li>
+<li><b>AURA</b> picks who produces blocks and <b>GRANDPA</b> finalizes them.</li>
+</ul>
+<h3>What problems it targets</h3>
+<p>Use cases in the marketing include private DeFi, identity and KYC checks, healthcare data, voting and supply chains. <b>Note:</b> one CoinGecko guide we read was <b>sponsored</b>, so it is promotional. Look for real apps and usage, not just lists of ideas.</p>
+<div class="key"><b>Compare:</b> Zcash and Zano hide payments. Midnight hides <b>application data</b>. The question is not only "who paid whom" but "can I prove I am over 18, or that this loan is safe, without showing my records?"</div>
+`},
+{t:'NIGHT & DUST',html:`
+<h2>The Two-Token System: NIGHT and DUST</h2>
+<p>Midnight splits money and fuel into two assets. This is unusual and is the part students often find confusing, so take it slowly.</p>
+<table><tr><th></th><th>NIGHT</th><th>DUST</th></tr>
+<tr><td>Role</td><td>The main token. Governance and value.</td><td>The "fuel" used to pay fees.</td></tr>
+<tr><td>Visibility</td><td>Unshielded (public)</td><td>Shielded (private)</td></tr>
+<tr><td>Supply</td><td>Fixed at 24 billion</td><td>Not a normal coin; regenerates</td></tr>
+<tr><td>Transferable?</td><td>Yes</td><td>No. It cannot be sent, but it can be delegated to sponsor someone else's fees.</td></tr></table>
+<h3>How DUST works</h3>
+<ul>
+<li>Holding NIGHT <b>generates DUST</b> over time, up to a cap of <b>5 DUST per NIGHT</b>.</li>
+<li>The cap fills in about <b>one week</b>. Example: 100 NIGHT gives a cap of 500 DUST, filling at about 71 DUST a day.</li>
+<li>DUST <b>decays</b>. If you move your NIGHT, the DUST linked to it decays toward zero.</li>
+<li>You can <b>delegate</b> DUST so an app pays fees for its users (sponsored fees).</li>
+</ul>
+<h3>Fees</h3>
+<p>A transaction fee is the sum of a minimum charge, a congestion adjustment and a size component. Block rewards come only from a <b>Reserve</b> of NIGHT (a 95% fixed subsidy at launch).</p>
+<div class="key"><b>Why design it this way?</b> Fees are paid in a private, non-transferable resource, so people cannot easily trace fee payments, and ordinary users do not need to spend NIGHT every time. Apps can also pay fees for users to make the app feel "free." The trade-off is a new concept to learn.</div>
+<h3>Why is NIGHT on Cardano? And what is the BSC token?</h3>
+<ul>
+<li>NIGHT first launched as a native token on <b>Cardano</b>, because Midnight began as a Cardano partner chain and many early holders were Cardano users. Roughly half of the distribution targeted Cardano holders.</li>
+<li>A <b>BNB Smart Chain (BSC)</b> version of NIGHT exists via the <b>Wanchain bridge</b>, which links Cardano and BNB Chain. This brought the token to a large trading venue but also added <b>bridge risk</b> (see Part 5).</li>
+<li>Many look-alike "NIGHT" tokens exist on BSC, including meme tokens. Always verify the official contract before touching one.</li>
+</ul>
+<div class="think"><b>Pause and think:</b> If DUST decays when you move NIGHT, how might that change how you treat your NIGHT holdings compared with a normal token?</div>
+`},
+{t:'Distribution & launch',html:`
+<h2>Distribution, Airdrops and Launch</h2>
+<h3>Token allocation (24B NIGHT)</h3>
+<table><tr><th>Bucket</th><th>Amount</th><th>Share</th><th>Lock?</th></tr>
+<tr><td>Midnight Foundation</td><td>8.40B</td><td>35%</td><td>No lock</td></tr>
+<tr><td>Reserve (block rewards)</td><td>6.00B</td><td>25%</td><td>Paid out over time</td></tr>
+<tr><td>Glacier Drop + Scavenger Mine</td><td>4.55B</td><td>18.95%</td><td>Four 25% unlocks ending Dec 4, 2026</td></tr>
+<tr><td>TGE Ltd (an affiliate)</td><td>3.66B</td><td>15.25%</td><td>No lock</td></tr>
+<tr><td>Treasury</td><td>1.20B</td><td>5%</td><td>-</td></tr>
+<tr><td>Lost-and-Found</td><td>192.6M</td><td>0.8%</td><td>Long claim period</td></tr></table>
+<p><b>Key fact:</b> Foundation plus TGE Ltd equal about <b>50.25%</b> of supply and have no lock. That is a concentration risk. Also note a source conflict: one guide put Lost-and-Found at about 252M instead of 192.6M, so allocation details vary by source.</p>
+<h3>The distribution programs</h3>
+<ul>
+<li><b>Glacier Drop.</b> A free claim for holders across <b>eight ecosystems</b>: ADA, BTC, ETH, SOL, XRP, BNB, AVAX and BAT. About half targeted Cardano holders and 20% Bitcoin holders.</li>
+<li><b>Scavenger Mine.</b> A mining-style game run Oct 29 to about Nov 19-20, 2025, where people solved puzzles to claim tokens. It drew more than 8 million addresses.</li>
+<li><b>Lost-and-Found.</b> Extra claims for eligible users who missed the main window, over about five years.</li>
+</ul>
+<h3>Launch timeline</h3>
+<div class="tl">
+<div><b>Dec 4, 2025</b><br>Token generation event (TGE) on Cardano.</div>
+<div><b>Dec 9-10, 2025</b><br>Exchange listings (Dec 9) and redemption begins (Dec 10). The price peaked near $0.12 in December 2025.</div>
+<div><b>Mar 17, 2026</b><br>First block on the Midnight chain.</div>
+<div><b>Mar 30, 2026</b><br>Public federated mainnet launches.</div>
+<div><b>Sept 28, 2026</b><br>Open contract deployment opens.</div>
+<div><b>Dec 4, 2026</b><br>Last of the four Glacier/Scavenger unlocks.</div>
+</div>
+<h3>Who runs the network? (Federated phase)</h3>
+<p>The mainnet launched <b>federated</b>, meaning a chosen group runs the validators. Nine named operators: Worldpay, Bullish, MoneyGram, Pairpoint by Vodafone, eToro, AlphaTON Capital, Google Cloud, Blockdaemon and Shielded Technologies. Big brand names add trust but mean the network is <b>not yet decentralized</b>.</p>
+`},
+{t:'Roadmap & status',html:`
+<h2>Roadmap, Delays and Current Status</h2>
+<p>Midnight names its phases with Hawaiian words:</p>
+<table><tr><th>Phase</th><th>What it covers (as we understand it)</th><th>Status</th></tr>
+<tr><td>Hilo</td><td>Earlier phase</td><td>Complete</td></tr>
+<tr><td>Kūkolu</td><td>Federated mainnet period</td><td>Current</td></tr>
+<tr><td>Mōhalu</td><td>Next phase; staging toward NIGHT staking and Cardano stake-pool block production</td><td>Delayed to Q1 2027</td></tr>
+<tr><td>Hua</td><td>Full decentralization and cross-chain features</td><td>Pushed to 2027 and beyond</td></tr></table>
+<h3>Known slips</h3>
+<ul>
+<li>An earlier plan pointed to Q3 2026 for Hua and LayerZero groundwork. That has <b>slipped</b>. Full decentralization is now expected in 2027 or later.</li>
+<li><b>NIGHT staking</b> and block production by Cardano stake pool operators is now targeted for <b>Q1 2027</b>, via a staged move to the BABE mechanism.</li>
+<li><b>Viewing keys</b> for auditors and regulators are planned for <b>Q1 2027</b>. So today, the selective-disclosure story is still partly a promise.</li>
+<li>The <b>bug bounty</b> was still on the roadmap in reporting.</li>
+<li>NIGHT holders cannot yet vote on-chain.</li>
+</ul>
+<h3>Things that did ship</h3>
+<ul>
+<li><b>Open contract deployment</b> on Sept 28, 2026.</li>
+<li>The hosted indexer and RPC were shut down on Oct 9, 2026. Developers must use Blockfrost or their own indexers.</li>
+<li><b>Ledger 9</b> on Nov 6, 2026 added contract-to-contract calls, events, ECDSA, secp256k1 and Keccak.</li>
+<li>38 teams took part in a hackathon in Korea, and a UK firm named Monument Bank discussed up to £250M of tokenized deposits.</li>
+</ul>
+<h3>Numbers (treat as snapshots)</h3>
+<table><tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Daily transactions</td><td>Rose from 128 to 47,714 between Sept 27 and Oct 26, 2026; over 1 million total</td></tr>
+<tr><td>Price</td><td>About $0.039 on Nov 9 and about $0.0445 on Nov 16 (CoinDesk), down 11.7% that day</td></tr>
+<tr><td>Market cap</td><td>About $740M, rank around #76</td></tr>
+<tr><td>Circulating supply</td><td>About 16.6B NIGHT (69.2%)</td></tr>
+<tr><td>Peak</td><td>About $0.12 in Dec 2025</td></tr></table>
+<div class="warn"><b>Read numbers carefully.</b> A jump from 128 to 47,714 daily transactions looks huge, but it starts from a tiny base and may include test or app-driven activity.</div>
+`},
+{t:'Case study: bridges & the Wanchain exploit',html:`
+<h2>Case Study: The Wanchain Bridge Exploit (July 21, 2026)</h2>
+<h3>What a bridge is, and why it matters here</h3>
+<p>A <b>bridge</b> lets a token on one chain be used on another. The usual method is to lock the real tokens in a vault on chain A and issue a copy on chain B. If the vault is robbed, the copies lose backing. Bridges hold huge value in one place, which makes them popular targets.</p>
+<p>Wanchain's bridge links Cardano and BNB Chain using a threshold-signature relayer system and launched for NIGHT in December 2025.</p>
+<h3>What happened</h3>
+<ul>
+<li>On July 21, 2026, an attacker drained NIGHT from the Cardano-side treasury of the bridge.</li>
+<li>BlockSec's Phalcon team said the flaw was in a <b>TreasuryCheck</b> function. It joined 14 variable-length fields <b>without separators or length markers</b>, so the same signed message could be reinterpreted in a different way. In other words, a valid signature could be <b>reused</b> for a different payout.</li>
+<li>Amounts: BlockSec said about <b>515M NIGHT</b> (about $9-10M at roughly $0.0186) left the treasury; Whale Alert said <b>290M</b>. The numbers disagree.</li>
+<li>NIGHT fell 30% or more (one source said 43% to an all-time low), then partly rebounded about 19%.</li>
+<li>The Midnight Foundation said the problem was <b>isolated to the Wanchain bridge</b>, with no change to total supply. A full post-mortem was not out at the time of the coverage.</li>
+<li>Hoskinson urged the industry to move to <b>ZK-based bridge designs</b>.</li>
+</ul>
+<h3>Other bridges to watch</h3>
+<ul>
+<li><b>Nightmode:</b> an MPC vault design with 7 signatures (not yet the production signer set).</li>
+<li><b>Sig Network:</b> stagenet tests, with TRON planned for December 2026.</li>
+<li><b>LayerZero / USDCx:</b> groundwork announced at Consensus Hong Kong 2026.</li>
+</ul>
+<div class="key"><b>Lessons.</b> (1) Moving a token across a bridge adds a new trust layer. (2) A tiny encoding mistake can cost millions. (3) "Isolated to the bridge" is true for supply, but holders still felt it in price. (4) Check which version of a token you hold: native on Cardano, or bridged copy on BSC.</div>
+`},
+{t:'Risks & the regulation question',html:`
+<h2>Risks and the Regulation Question</h2>
+<h3>Risk checklist</h3>
+<ul>
+<li><b>Centralized validation.</b> Nine named operators run the chain for now.</li>
+<li><b>Unlocked concentration.</b> Foundation plus TGE Ltd hold 50.25% unlocked.</li>
+<li><b>Delays.</b> Staking, wider validators and viewing keys slipped to 2027.</li>
+<li><b>Unreviewed apps.</b> Open deployment means anyone can publish contracts, and many have not been audited.</li>
+<li><b>Bridge trust.</b> Proven by the Wanchain event.</li>
+<li><b>Funding and dependency.</b> Reports said Hoskinson invested about $200M, and Binance Research cited an $85M loan from IO. Heavy dependence on one sponsor group can matter.</li>
+<li><b>Token supply overhang.</b> The final Glacier/Scavenger unlock ends Dec 4, 2026.</li>
+<li><b>Complexity.</b> Two tokens and a new language raise the learning curve.</li>
+</ul>
+<h3>Regulation</h3>
+<p>Midnight argues it is <b>compliance-friendly</b> because of selective disclosure and the planned viewing keys. But rules such as the EU's from July 10, 2027, which bar regulated firms from accounts holding anonymity-enhancing coins, might still apply. Whether Midnight counts depends on how the rules are written and enforced. This is an open question.</p>
+<h3>The honest scorecard</h3>
+<table><tr><th>Question</th><th>Midnight's answer today</th></tr>
+<tr><td>What is hidden?</td><td>App data and private state, by developer choice</td></tr>
+<tr><td>Optional or default?</td><td>Developer decides per field</td></tr>
+<tr><td>Who can see?</td><td>The user, and those they disclose to; auditor viewing keys are planned</td></tr>
+<tr><td>What could go wrong?</td><td>Centralization, delays, bridges, concentration, bugs</td></tr></table>
+<div class="think"><b>Pause and think:</b> If the validators are Google Cloud, Worldpay and other big firms, who could be pressured to censor or leak? Compare this with Zcash's few nodes and Monero's thousands.</div>
+`}
+],
+quiz:[
+Q('Who built Midnight?',['Input Output Global (IOG), with Charles Hoskinson','StarkWare','NEAR Foundation','The Zcash Foundation'],0,'IOG, the Cardano company, built Midnight.'),
+Q('What is Kachina?',['A 2020 research paper behind Midnight\'s design','A wallet','A stablecoin','A bridge'],0,'Kachina is the research foundation.'),
+Q('Where does private data stay in Midnight\'s design?',['On the user\'s own device','On a public ledger','On a central server','On miners'],0,'A local proof server on your device makes the proof.'),
+Q('What is Compact?',['A TypeScript-based smart-contract language','A hardware wallet','A zk-STARK prover','A DEX'],0,'Compact lets web developers write Midnight contracts.'),
+Q('How many NIGHT will ever exist?',['24 billion','21 million','1 trillion','Unlimited'],0,'NIGHT is fixed at 24 billion.'),
+Q('Is NIGHT shielded or unshielded?',['Unshielded (public)','Shielded','It depends on the miner','Both at once'],0,'NIGHT is public. DUST is shielded.'),
+Q('What is the DUST cap per NIGHT?',['5 DUST','100 DUST','1 DUST','No cap'],0,'The cap is 5 DUST per NIGHT and fills in about a week.'),
+Q('What happens to DUST if you move the NIGHT that generated it?',['It decays toward zero','It doubles','It becomes NIGHT','Nothing'],0,'DUST decays when its NIGHT moves.'),
+Q('Can DUST be sent to another person as a normal transfer?',['No, but it can be delegated to sponsor fees','Yes, freely','Only on weekends','Only by miners'],0,'DUST is non-transferable but delegable.'),
+Q('Which chain did NIGHT first launch on?',['Cardano','Solana','Ethereum','Bitcoin'],0,'NIGHT launched as a Cardano native token.'),
+Q('What brought NIGHT to BNB Smart Chain?',['The Wanchain bridge','A Zcash fork','Starknet','IronClaw'],0,'The bridge links Cardano and BNB Chain.'),
+Q('What is the combined no-lock share of the Foundation and TGE Ltd?',['About 50.25%','About 5%','About 1%','About 90%'],0,'8.40B plus 3.66B is about 50.25% of supply.'),
+Q('How many ecosystems did the Glacier Drop cover?',['Eight','Two','Twenty','One'],0,'ADA, BTC, ETH, SOL, XRP, BNB, AVAX and BAT.'),
+Q('When did Midnight\'s federated mainnet go public?',['Mar 30, 2026','Dec 4, 2025','Nov 5, 2026','July 21, 2026'],0,'The first block was Mar 17 and public launch was Mar 30, 2026.'),
+Q('How many named operators run the federated mainnet?',['Nine','One','A thousand','None'],0,'Worldpay, Bullish, MoneyGram, Pairpoint by Vodafone, eToro, AlphaTON Capital, Google Cloud, Blockdaemon, Shielded Technologies.'),
+Q('When are NIGHT staking and SPO block production now targeted?',['Q1 2027','Q3 2026','2020','Already live'],0,'They slipped to Q1 2027, via a staged move to BABE.'),
+Q('What is planned for Q1 2027 that supports compliance?',['Viewing keys for auditors and regulators','A proof-of-work switch','A Bitcoin ETF','A new mining chip'],0,'Selective disclosure is partly still a promise until then.'),
+Q('What happened to the hosted indexer/RPC on Oct 9, 2026?',['It was shut down; developers use Blockfrost or their own','It was upgraded','It became free','It was moved to Zcash'],0,'Developers must use alternative indexers.'),
+Q('What did Ledger 9 add on Nov 6, 2026?',['Contract-to-contract calls, events and more crypto primitives','A new token','A bridge','A bug bounty'],0,'Ledger 9 added contract-to-contract calls, events, ECDSA, secp256k1 and Keccak.'),
+Q('What flaw did BlockSec find in the Wanchain bridge?',['A signed-message encoding that joined fields without separators, allowing signature reuse','A stolen private key','A DNS attack','A miner attack'],0,'Fields were concatenated without separators or length markers.'),
+Q('How did the two sources differ on the amount taken?',['BlockSec said about 515M NIGHT, Whale Alert said 290M','Both said exactly 1M','Neither mentioned amounts','Both said 24B'],0,'The numbers disagree, so treat them as estimates.'),
+Q('What did the Midnight Foundation say after the exploit?',['It was isolated to the Wanchain bridge with no change to total supply','The whole chain was hacked','NIGHT was cancelled','Staking was paused forever'],0,'Total supply was unchanged.'),
+Q('Which warning applies to BSC "NIGHT" tokens?',['Many look-alikes exist, so verify the official contract','All are official','They pay interest','They are DUST'],0,'Several look-alike and meme tokens exist.'),
+Q('Which EU date is cited for rules affecting anonymity-enhancing coins?',['July 10, 2027','Dec 4, 2025','Mar 17, 2026','Nov 6, 2026'],0,'The rules are cited from July 10, 2027.')
+]}
+,
+{id:'wrap',short:'Compare & Glossary',title:'Module 7: Compare, Timeline, Checklist & Glossary',kicker:'Module 7 · Putting it together',
+parts:[
+{t:'Side-by-side',html:`
+<h2>All Five Projects, Side by Side</h2>
+<table><tr><th></th><th>Zcash</th><th>NEAR</th><th>Starknet</th><th>Zano</th><th>Midnight</th></tr>
+<tr><td><b>Type</b></td><td>Own L1 (PoW)</td><td>Own L1 (PoS)</td><td>Ethereum L2</td><td>Own L1 (PoW+PoS)</td><td>Own chain (Substrate), Cardano-linked</td></tr>
+<tr><td><b>Privacy method</b></td><td>zk-SNARKs (Halo 2)</td><td>TEEs + permissioned operators</td><td>STARK proofs, privacy pool</td><td>Ring sigs, stealth, hidden amounts</td><td>zk-SNARKs, local proofs</td></tr>
+<tr><td><b>Default?</b></td><td>Optional</td><td>Opt-in confidential layer</td><td>Opt-in shield</td><td>Default</td><td>Developer choice</td></tr>
+<tr><td><b>What is hidden</b></td><td>Sender, receiver, amount</td><td>Wallet trail, order details</td><td>In-pool sender, receiver, amount</td><td>Sender, receiver, amount, asset type</td><td>App data</td></tr>
+<tr><td><b>Who can see</b></td><td>Viewing-key holders</td><td>Operators; settlement auditable</td><td>Oversight entity on conditions</td><td>Mostly nobody</td><td>Disclosed parties; viewing keys planned</td></tr>
+<tr><td><b>Token supply</b></td><td>21M cap</td><td>Inflationary, cut to 2.5% then max 1.6%</td><td>STRK + shielded ERC-20s</td><td>Tail emission, fees burned</td><td>24B NIGHT fixed</td></tr>
+<tr><td><b>Smart contracts</b></td><td>No</td><td>Yes</td><td>Yes</td><td>No general (per FAQ)</td><td>Yes (Compact)</td></tr>
+<tr><td><b>Big 2026 event</b></td><td>Orchard bug, NU7</td><td>Confidential Intents</td><td>STRK20, strkBTC</td><td>Gateway exploit</td><td>Mainnet, Wanchain exploit</td></tr>
+<tr><td><b>Main trust risk</b></td><td>Few teams, hidden bugs</td><td>Hardware and operators</td><td>Bridge and oversight</td><td>Code and liquidity</td><td>Federation and unlocks</td></tr></table>
+<h3>Trust model ranking: what do you have to trust?</h3>
+<ol>
+<li><b>Math only</b> (best case): Zcash's shielded pools.</li>
+<li><b>Math plus a bridge or oversight group:</b> Starknet.</li>
+<li><b>Math plus operators:</b> Midnight's current federation.</li>
+<li><b>Hardware plus operators:</b> NEAR's confidential layer.</li>
+</ol>
+<p>This is a simplification. Even "math only" systems depend on correct code, as the Orchard bug proved.</p>
+<div class="key"><b>The connections.</b> NEAR Intents routes swaps into ZEC. Starknet's CEO helped create Zcash. NEAR Intents is a member of Starknet's strkBTC bridge group. Midnight's token lives across Cardano and BNB Chain. These projects overlap more than their marketing suggests.</div>
+`},
+{t:'2026 timeline',html:`
+<h2>The Privacy Year: Key Dates</h2>
+<div class="tl">
+<div><b>Jan 2026</b><br>ECC engineering team leaves to form ZODL.</div>
+<div><b>Feb 2026</b><br>Zashi becomes Zodl. NEAR launches near.com and IronClaw (Feb 23). Confidential Intents announced (Feb 25). strkBTC unveiled (Feb 26).</div>
+<div><b>Mar 2026</b><br>ZODL raises $25M (Mar 9). STRK20 announced (Mar 10). Midnight first block (Mar 17) and public mainnet (Mar 30).</div>
+<div><b>May 2026</b><br>strkBTC live (May 12). ZEC support grows in NEAR Intents. Orchard bug found (May 29).</div>
+<div><b>June 2026</b><br>Orchard emergency fix (June 1-3). STRK20 mainnet (June 9). Disclosure June 4-5. USDC joins STRK20 (June 25).</div>
+<div><b>July 2026</b><br>Wanchain bridge exploit hits NIGHT (July 21).</div>
+<div><b>Aug 2026</b><br>Zano Hard Fork 6 (Aug 26) and first mint exploit (Aug 29). Intel Trust Authority joins NEAR AI Cloud (Aug 12).</div>
+<div><b>Sept 2026</b><br>NEAR perps confidential by default (Sept 17). Second Zano mint (Sept 25). Zano rolls back. Midnight open contract deployment (Sept 28). ZEC above $1,000 reported.</div>
+<div><b>Oct 2026</b><br>Starknet Shadow Accounts (Oct 13). Midnight hosted indexer shut (Oct 9). Zano post-mortem (Oct 1-2).</div>
+<div><b>Nov 2026</b><br>NEAR HSP-029 passes (Nov 2). Zcash NU7 activates (Nov 5). Midnight Ledger 9 (Nov 6).</div>
+</div>
+<div class="think"><b>Pause and think:</b> Two of these five projects (Zcash and Zano) had serious supply-integrity bugs within about three months. What does that tell you about the maturity of privacy technology?</div>
+`},
+{t:'Due-diligence checklist',html:`
+<h2>How to Research a Privacy Project Like a Pro</h2>
+<p>You will see new "private" projects every month. Use this checklist before you trust any claim.</p>
+<h3>The 12 questions</h3>
+<ol>
+<li><b>What exactly is hidden?</b> Sender, receiver, amount, asset, or only the wallet link?</li>
+<li><b>Is it default or opt-in?</b> Opt-in systems have smaller crowds.</li>
+<li><b>Who can see the data?</b> Operators, auditors, hardware makers, anyone?</li>
+<li><b>What do I have to trust?</b> Math, hardware, a bridge, a group of firms?</li>
+<li><b>How big is the anonymity set?</b> Look at the share of supply or users in the private part.</li>
+<li><b>Where are the visible edges?</b> Deposits, withdrawals, bridges.</li>
+<li><b>Has it been audited, and are reports public?</b> Also: was the specific <i>new</i> feature audited?</li>
+<li><b>Is the bridge federated or proof-based?</b></li>
+<li><b>Who holds the supply?</b> Look at unlocks and concentration.</li>
+<li><b>Is the token needed?</b> Does real usage create demand, or only hope?</li>
+<li><b>What does regulation say where you live?</b></li>
+<li><b>Is this source promotional?</b> Sponsored guides and project blogs are not neutral.</li>
+</ol>
+<h3>Red flags</h3>
+<ul>
+<li>Headlines with "billions" but no revenue or fee data.</li>
+<li>Roadmap dates that keep sliding (watch Midnight's Q3 2026 to 2027 move).</li>
+<li>One team holding most of the unlocked supply.</li>
+<li>A new feature rushed into production with no outside review.</li>
+<li>Look-alike tokens and copycat websites.</li>
+</ul>
+<h3>Case: applying the checklist to a news story</h3>
+<div class="case"><p>Headline: "Private DeFi platform hits $30B volume!" Questions to ask: Is that cumulative or daily? Volume of swaps, or revenue? Are swaps private by default, or only the confidential layer? Who runs the private part? NEAR Intents' $29-30B was <b>cumulative</b> across all swaps, and the confidential share is a smaller slice (confidential TVL passed $70M).</p></div>
+<div class="warn"><b>Reminder.</b> This is education, not advice. Never put in more than you can afford to lose, and keep your own keys safe.</div>
+`},
+{t:'Glossary',html:`
+<h2>Glossary</h2>
+<dl class="gl">
+<dt>Anonymity set</dt><dd>The crowd you hide in. Bigger is better.</dd>
+<dt>Attestation</dt><dd>A signed proof from hardware that specific code is running in a sealed environment.</dd>
+<dt>Bridge</dt><dd>A system that lets tokens be used on another chain, usually by locking the original and issuing a copy.</dd>
+<dt>Confidential Asset (Zano)</dt><dd>A token on Zano whose amounts, owners and asset type are hidden.</dd>
+<dt>CryptoNote</dt><dd>The privacy protocol family behind Monero and Zano.</dd>
+<dt>DUST (Midnight)</dt><dd>The private, non-transferable fuel generated by holding NIGHT.</dd>
+<dt>Federated</dt><dd>Run by a chosen group instead of an open set of validators.</dd>
+<dt>Front-running</dt><dd>Jumping ahead of someone's visible trade to profit.</dd>
+<dt>Halo 2</dt><dd>Zcash's proving system that needs no trusted setup.</dd>
+<dt>Intent (NEAR)</dt><dd>A request for an outcome that solvers compete to fill.</dd>
+<dt>Kachina</dt><dd>The research paper behind Midnight's private/public design.</dd>
+<dt>MEV</dt><dd>Profit extracted by reordering or inserting transactions.</dd>
+<dt>MPC</dt><dd>Several parties computing together while each keeps a secret piece.</dd>
+<dt>Note</dt><dd>An encrypted record of value inside a shielded pool.</dd>
+<dt>Nullifier</dt><dd>A tag that marks a note as spent without revealing which one.</dd>
+<dt>Paymaster</dt><dd>A service that pays network fees for someone else.</dd>
+<dt>Perps</dt><dd>Perpetual futures, a leveraged derivative with no expiry date.</dd>
+<dt>Ring signature</dt><dd>A signature that proves one member of a group signed without saying who.</dd>
+<dt>Rollup / layer-2</dt><dd>A network that processes transactions off the main chain and posts proof back to it.</dd>
+<dt>Selective disclosure</dt><dd>Revealing only chosen facts to chosen people.</dd>
+<dt>Shielded</dt><dd>Hidden by privacy tech. The opposite of transparent.</dd>
+<dt>Soundness</dt><dd>The promise that a false statement cannot be proven.</dd>
+<dt>Solver</dt><dd>A bot or market maker that fills intents.</dd>
+<dt>Stealth address</dt><dd>A one-time receive address made for each payment.</dd>
+<dt>TEE</dt><dd>Trusted execution environment, a sealed area of a chip.</dd>
+<dt>Trusted setup</dt><dd>A ceremony to create proof parameters. Secret leftovers must be destroyed.</dd>
+<dt>Turnstile</dt><dd>A rule that stops value leaving a pool beyond what entered it.</dd>
+<dt>Unified Address (Zcash)</dt><dd>One address that bundles several types so wallets pick the most private one.</dd>
+<dt>Viewing key</dt><dd>A key that lets someone read (not spend) chosen transactions.</dd>
+<dt>VWAP</dt><dd>Volume-weighted average price, an average that counts bigger trades more.</dd>
+<dt>zk-SNARK / zk-STARK</dt><dd>Two families of zero-knowledge proofs. STARKs need no trusted setup.</dd>
+<dt>Zero-knowledge proof</dt><dd>Proving something is true without showing the data behind it.</dd>
+</dl>
+`}
+],
+quiz:[
+Q('Which project is an Ethereum layer-2?',['Starknet','Zano','Zcash','Midnight'],0,'Starknet is an Ethereum L2.'),
+Q('Which project uses ring signatures and hides asset type by default?',['Zano','NEAR','Zcash','Starknet'],0,'Zano has default privacy with ring signatures and Confidential Assets.'),
+Q('Which project relies on TEEs plus permissioned operators for its confidential layer?',['NEAR','Zcash','Zano','Midnight'],0,'NEAR\'s Confidential Intents.'),
+Q('Which privacy approach is described as "math only" in our trust ranking?',['Zcash shielded pools','NEAR confidential layer','A federated bridge','A TEE'],0,'Zcash\'s shielded pools rely mostly on math, though code bugs still matter.'),
+Q('What is the total supply of NIGHT?',['24 billion','21 million','1 billion','Unlimited'],0,'NIGHT is fixed at 24 billion.'),
+Q('What is a "red flag" in the checklist?',['One team holding most of the unlocked supply','A public audit report','A small bridge','A short roadmap that hits dates'],0,'Concentrated unlocked supply is a risk.'),
+Q('The NEAR Intents "$29-30B" figure is:',['Cumulative volume across all swaps','Daily volume','Revenue','Confidential TVL'],0,'It is cumulative, and the confidential part is a smaller slice.'),
+Q('In what month did Zano\'s Hard Fork 6 activate?',['August 2026','January 2026','March 2026','November 2026'],0,'HF6 activated Aug 26, 2026.'),
+Q('Which two projects had serious supply-integrity bugs in 2026 per the timeline?',['Zcash and Zano','NEAR and Starknet','Starknet and Midnight','NEAR and Midnight'],0,'The Orchard bug and the Gateway exploit.'),
+Q('What does a nullifier do?',['Marks a note as spent without revealing which one','Hides the sender\'s IP','Mints new coins','Votes in governance'],0,'It prevents double-spending in shielded pools.'),
+Q('What is a paymaster?',['A service that pays network fees for someone else','A miner','A bridge guard','A wallet seed'],0,'avnu\'s paymaster hides who pays gas.'),
+Q('What does VWAP stand for in the NEAR@3.33 milestone?',['Volume-weighted average price','Virtual wallet and payment','Validator weight at peak','Verified wrapped asset price'],0,'It averages price weighted by volume.'),
+Q('Which is a connection between projects mentioned in the lesson?',['NEAR Intents is part of Starknet\'s strkBTC bridge group','Zano and Midnight share a validator','Zcash and Midnight use the same token','Starknet runs on Zano'],0,'NEAR Intents is listed among the strkBTC federation members.'),
+Q('Which checklist question asks about regulation?',['What does regulation say where you live?','Is the roadmap long?','Is the logo nice?','How many followers does it have?'],0,'Question 11 in the checklist.')
+]}
+,
+{id:'final',short:'Final Exam',title:'Final Exam (50 questions)',kicker:'Final exam · Everything counts',final:true,
+parts:[
+{t:'Exam',html:`
+<h2>Final Exam</h2>
+<p>This exam covers all seven modules: foundations, Zcash, NEAR, Starknet, Zano, Midnight, and the wrap-up. There are <b>50 questions</b>. It counts for <b>40%</b> of your overall grade, and your module quizzes count for the other 60%.</p>
+<div class="card"><b>Tips.</b>
+<ul><li>Go back to any lesson with the chips at the top. Your quiz scores are saved.</li>
+<li>Several questions are real-world scenarios. Ask the four questions: what is hidden, optional or default, who can see, what could go wrong.</li>
+<li>Answer every question before you submit. You can retake the exam to improve your grade.</li></ul></div>
+`}
+],
+quiz:[
+Q('A payment that hides the sender, receiver and amount, with the choice left to the user, best describes:',['Zcash shielded transactions','A plain Bitcoin transfer','A NEAR Intents swap','A Midnight validator reward'],0,'Zcash has optional shielded transactions.'),
+Q('Which proof family needs no trusted setup and underlies Starknet?',['STARKs','Ring signatures','TEEs','CoinJoin'],0,'Starknet is built on STARK proofs.'),
+Q('Zcash\'s Orchard pool launched with which proving system?',['Halo 2','Kachina','S-two','CLSAG'],0,'Halo 2 removed the trusted setup need.'),
+Q('How long did the Orchard bug sit in live code?',['About four years','About four days','About six months','About ten years'],0,'May 31, 2022 to May 2026.'),
+Q('Which rule limits how much value can leave a Zcash pool?',['The turnstile','The halving','The ring size','The nullifier set only'],0,'It protects total supply even if a hidden bug creates fake value inside.'),
+Q('What did NU7 change about Zcash blocks?',['Block time dropped from 75 to 25 seconds','Block time rose to 10 minutes','Blocks became private','Mining ended'],0,'ZIP-218.'),
+Q('What does the Network Sustainability Mechanism do?',['Removes 60% of each block\'s fees into a public reserve, with reissuance from 2031','Burns all fees forever','Pays ECC','Doubles issuance'],0,'It is part of NU7.'),
+Q('Which group of engineers formed ZODL?',['The former ECC engineering team','The Monero developers','The Starknet team','The NEAR AI team'],0,'They left ECC in January 2026.'),
+Q('Which statement about shielded supply is best supported by the course?',['It rose from about 8% in early 2024 to roughly 30% in 2026, though trackers differ','It fell to zero in 2026','It was always 90%','It cannot be measured at all'],0,'Estimates vary between trackers.'),
+Q('Why can ZEC price rise without shielded supply rising?',['Exchange-held ZEC sits in transparent addresses','Shielded pools reject buyers','Miners hide coins','Price and supply are the same'],0,'Buying and leaving coins on exchanges adds no shielded coins.'),
+Q('Which statement correctly describes NEAR?',['A public layer-1; privacy features come from Confidential Intents and NEAR AI','A ring-signature privacy coin','A Zcash fork','A Cardano sidechain'],0,'NEAR itself is not a privacy coin.'),
+Q('What is an intent?',['A request for an outcome that solvers compete to fill','A mining pool','A key backup','A validator vote'],0,'You state the result you want.'),
+Q('What does Confidential Intents Phase 0 rely on?',['A private shard with permissioned validators and TEE-based bridging','Ring signatures and PoW','Only zk-STARKs','Nothing'],0,'Trust assumptions include operators and hardware.'),
+Q('Which hardware pair powers NEAR AI private inference?',['Intel TDX and NVIDIA confidential computing','Apple and Samsung','AMD and Qualcomm','Ledger and Trezor'],0,'Per NEAR AI docs.'),
+Q('What cut did HSP-029 make to NEAR issuance?',['Max annual issuance from 2.5% to 1.6%','From 5% to 50%','To zero','It doubled it'],0,'House of Stake approved it Nov 2, 2026.'),
+Q('Why do the two NEAR value-capture reports disagree?',['They claim different fee and buyback facts, so you should check dates and official data','One is about Bitcoin','They are both identical','They are about Zano'],0,'Always check the date and source.'),
+Q('STRK20 is best described as:',['A token standard giving ERC-20s a private mode through a shared privacy pool','A new Layer-1','A mining algorithm','A wallet brand'],0,'It is a privacy standard for Starknet tokens.'),
+Q('In a private Ekubo swap, what remains public?',['Token type and amount','The trader\'s name','Nothing','The wallet seed'],0,'The swap affects public pool state.'),
+Q('What does Shadow Accounts leave public?',['The shadow account\'s balances, transactions and positions','The link to the main wallet','Nothing at all','Only the fee'],0,'It breaks the link, not the visibility of the account itself.'),
+Q('What backs strkBTC and who holds the BTC today?',['Real BTC held by a federated group of operators','Gold held by a bank','Nothing','Miners'],0,'The federation includes Twinstake, NEAR Intents, Luganodes, UTXO and Xverse.'),
+Q('Which Bitcoin change might eventually be needed for a stronger strkBTC bridge?',['A soft fork such as OP_CAT','A hard fork to 100M coins','Merged mining','A new halving'],0,'The roadmap mentions OP_CAT.'),
+Q('Who is the person who co-founded Zcash and leads StarkWare?',['Eli Ben-Sasson','Josh Swihart','Hoskinson','Polosukhin'],0,'He is StarkWare\'s CEO.'),
+Q('What does Zarcanum allow on Zano?',['Staking without revealing the staked amount, plus Confidential Assets','Optional privacy only','Ethereum smart contracts','Free fees'],0,'It was the early-2024 hard fork.'),
+Q('What happens to Zano network fees?',['They are burned','They go to Monero','They are paid to a company','They are refunded'],0,'Fees are burned.'),
+Q('On what date did Zano Hard Fork 6 activate Gateway Addresses?',['August 26, 2026','January 7, 2025','Nov 5, 2026','March 30, 2026'],0,'Block 3,833,000.'),
+Q('How many unauthorized ZANO did the attacker mint in total?',['About 36.9 million','About 18,400','About 369 billion','Zero'],0,'Two events of about 18.4M each.'),
+Q('How did Zano restore the intended supply?',['Restarted the chain from block 3,833,000','Froze all wallets','Issued a new token','Changed its name'],0,'About a month of history was erased.'),
+Q('Why is "over $200M in illicit tokens" misleading?',['It is paper value in a thin market, not cash actually taken','ZANO has no price','The coins were real','It is in euros'],0,'The exact amount of funds actually taken was not disclosed.'),
+Q('Which Midnight token is private, non-transferable and decays?',['DUST','NIGHT','ZANO','STRK'],0,'DUST is generated by holding NIGHT.'),
+Q('What is the DUST cap per NIGHT?',['5','500','0.5','Unlimited'],0,'The cap fills in about a week.'),
+Q('What is the biggest allocation bucket in Midnight\'s supply?',['Midnight Foundation at about 35%','Treasury at 5%','Lost-and-Found at 0.8%','Reserve at 1%'],0,'8.40B NIGHT with no lock.'),
+Q('Foundation plus TGE Ltd hold roughly what unlocked share?',['About 50.25%','About 5%','About 80%','About 0.8%'],0,'It is a concentration risk.'),
+Q('Midnight\'s mainnet launched as:',['Federated, with nine named operators','Fully decentralized','A Zcash fork','An Ethereum L2'],0,'Worldpay, Google Cloud, eToro and others run it.'),
+Q('What slipped to Q1 2027 on Midnight?',['NIGHT staking, SPO block production and auditor viewing keys','The token launch','The Scavenger Mine','The first block'],0,'These are the delayed items.'),
+Q('What flaw did BlockSec report in the Wanchain bridge?',['A signature message encoding without separators or length markers allowed reuse','A stolen server','A phishing attack','A cooling-off period'],0,'The TreasuryCheck function was the issue.'),
+Q('Why is it important to check which NIGHT token you hold?',['Look-alike tokens and bridged copies exist on BNB Chain','All NIGHT tokens are identical and safe','NIGHT does not exist on Cardano','BSC NIGHT is shielded'],0,'Verify official contracts.'),
+Q('Scenario: A project says "fully private" but its settlements are auditable and run by a small operator group. Which questions should you ask first?',['Who can see the data and what do I have to trust?','What color is the logo?','How many Twitter followers?','Is it listed on a weekend?'],0,'The four questions focus on visibility and trust.'),
+Q('Scenario: You see a report that a chain\'s daily transactions went from 128 to 47,714 in a month. What is the best response?',['Notice the tiny starting base and check what drove the activity','Assume it will grow 100x again','Buy immediately','Ignore all data'],0,'Huge percent changes from a small base can be misleading.'),
+Q('Scenario: A sponsored guide lists endless use cases for a coin. What should you do?',['Look for real apps and usage data from independent sources','Treat it as proof','Share it as news','Skip due diligence'],0,'Sponsored content is promotional.'),
+Q('Scenario: You move 5,000 coins from a public address into a shielded pool, then withdraw 5,000 an hour later. What is the risk?',['Matching amount and timing can link you','Nothing can ever be linked','The coins are burned','The pool will refuse you'],0,'Visible edges and matching sizes can leak links.'),
+Q('Scenario: A new feature in a privacy chain was just released and a rollback was needed within weeks. Which lesson fits best?',['New features are the riskiest code, and outside audits still miss things','Old code is always buggy','Rollbacks are never needed','Privacy chains are always safe'],0,'See the Zano Gateway case.'),
+Q('Scenario: A trader says "NEAR volume is $29B so the NEAR token must be worth much more." What is the best reply?',['Check whether that figure is cumulative and how much fee value reaches the token','Agree immediately','Ignore the token','Say volume equals revenue'],0,'Volume is not revenue, and value capture is debated.'),
+Q('Which tool lets an auditor read chosen transactions without spending the funds?',['Viewing key','Private key','Seed phrase','Mining key'],0,'Viewing keys give read-only access.'),
+Q('Whose CEO, a Zcash co-founder, called privacy "private digital cash, the way it should be"?',['StarkWare (Starknet)','Zano','Midnight','NEAR'],0,'Eli Ben-Sasson of StarkWare said this.'),
+Q('In the trust ranking, which approach needs hardware plus operators?',['NEAR\'s confidential layer','Zcash shielded pools','A zk-STARK pool alone','A paper wallet'],0,'TEEs plus permissioned operators.'),
+Q('Which Zano claim should be verified rather than assumed?',['Whether Zano has general smart contracts','That Zano is a CryptoNote descendant','That ZANO fees are burned','That the chain restarted at block 3,833,000'],0,'Sources conflict on smart contracts.'),
+Q('Which numbers conflict across sources in this course?',['Midnight Lost-and-Found size and amounts taken in the Wanchain exploit','The year Bitcoin launched','The number of days in a week','ZEC\'s 21M cap'],0,'Always flag conflicting figures.'),
+Q('Which feature lets Midnight apps pay fees for their users?',['Delegating DUST for sponsored fees','Mining NIGHT','Ring signatures','Atomic swaps'],0,'DUST is non-transferable but delegable.'),
+Q('Which statement best sums up this course\'s big lesson?',['Privacy tech varies in what it hides, who can see, what you must trust, and how it can fail','All privacy coins are the same','Privacy is always illegal','Price tells you how private a coin is'],0,'The four questions apply to every project.'),
+Q('On what date was the Orchard bug found?',['May 29, 2026','Nov 5, 2026','Dec 4, 2025','Aug 26, 2026'],0,'The flaw was found May 29, 2026; fixes came June 1-3.')
+]}
+];
+
+/* ---------------- STATE ---------------- */
+var P={scores:{},sent:null,name:'',email:''};
+try{var s=localStorage.getItem('bws_privacy_course_v2');if(s)P=JSON.parse(s);}catch(e){}
+function save(){try{localStorage.setItem('bws_privacy_course_v2',JSON.stringify(P));}catch(e){}}
+var cur=0,curPart=0;
+var ids=SECTIONS.map(function(s){return s.id;});
+var lessonIds=ids.filter(function(i){return i!=='final';});
+function letter(p){return p>=90?'A':p>=80?'B':p>=70?'C':p>=60?'D':'F';}
+function allDone(){return ids.every(function(i){return P.scores[i];});}
+function overall(){
+  var sum=0;lessonIds.forEach(function(i){sum+=(P.scores[i]?P.scores[i].pct:0);});
+  var lessonAvg=sum/lessonIds.length;
+  var f=P.scores.final?P.scores.final.pct:0;
+  return Math.round(lessonAvg*0.6+f*0.4);
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ---------------- NAV ---------------- */
+function drawChips(){
+  var h='';
+  SECTIONS.forEach(function(s,i){h+='<div class="chip'+(i===cur?' on':'')+(P.scores[s.id]?' done':'')+'" onclick="go('+i+',0)">'+(i+1)+'. '+(s.short||s.title)+'</div>';});
+  h+='<div class="chip'+(cur===SECTIONS.length?' on':'')+(allDone()?' done':'')+'" onclick="go('+SECTIONS.length+',0)">Certificate</div>';
+  document.getElementById('chips').innerHTML=h;
+  var done=ids.filter(function(i){return P.scores[i];}).length;
+  document.getElementById('barfill').style.width=Math.round(done/ids.length*100)+'%';
+}
+function go(i,p){
+  cur=i;curPart=p||0;drawChips();
+  stopListen();
+  if(i>=SECTIONS.length){renderCert();}else{renderSection(i);}
+  window.scrollTo({top:0});
+}
+function prev(){
+  if(curPart>0)return go(cur,curPart-1);
+  if(cur>0)return go(cur-1,SECTIONS[cur-1].parts.length-1);
+}
+function next(){
+  var s=SECTIONS[cur];
+  if(curPart<s.parts.length-1)return go(cur,curPart+1);
+  go(cur+1,0);
+}
+function toQuiz(){go(cur,SECTIONS[cur].parts.length-1);setTimeout(function(){var e=document.getElementById('quizbox');if(e)e.scrollIntoView();},50);}
+
+function renderSection(i){
+  var s=SECTIONS[i];var np=s.parts.length;var last=(curPart===np-1);
+  var h='<div class="kick">'+s.kicker+(np>1?' · Part '+(curPart+1)+' of '+np:'')+'</div>';
+  if(np>1){
+    h+='<div class="sub">';
+    s.parts.forEach(function(p,k){h+='<button class="'+(k===curPart?'on':'')+'" onclick="go('+i+','+k+')">'+(k+1)+'. '+p.t+'</button>';});
+    h+='</div>';
+  }
+  h+=s.parts[curPart].html;
+  h+='<div class="tools"><button class="ghost" onclick="listen()">🔊 Listen to this part</button><button class="ghost" onclick="stopListen()">Stop</button>'+(!last?'<button class="ghost" onclick="toQuiz()">Jump to the quiz</button>':'')+'</div>';
+  h+='<div class="card small" style="margin-top:12px"><b>Voice:</b> <select id="vsel" onchange="setVoice(this.value)" style="max-width:100%;padding:6px;background:#16264a;color:#e8ecf4;border:1px solid #243459;border-radius:6px"></select> &nbsp; <b>Speed:</b> <input type="range" min="0.7" max="1.2" step="0.05" value="'+speed+'" oninput="setSpeed(this.value)" style="vertical-align:middle"> <span id="sval">'+speed.toFixed(2)+'x</span><br>Tip: in Microsoft Edge, pick a voice with <b>Natural</b> in its name. They sound far more human than the default.</div>';
+  if(last){
+  h+='<div class="quiz" id="quizbox"><h3>'+(s.final?'Final Exam':'Module Quiz')+' · '+s.quiz.length+' questions</h3><p class="small">Read the lessons first. The questions use details from the text. You can retake the quiz to raise your grade.</p><div id="qbox"></div><div id="res"></div></div>';
+  }
+  h+='<div class="pager"><button class="ghost" '+((i===0&&curPart===0)?'disabled':'')+' onclick="prev()">← Back</button><button onclick="next()">'+((i===SECTIONS.length-1&&last)?'Certificate →':(last?'Next module →':'Next part →'))+'</button></div>';
+  document.getElementById('main').innerHTML=h;
+  loadVoices();
+  if(last)renderQuiz(i);
+}
+
+function renderQuiz(i){
+  var s=SECTIONS[i];var h='';
+  s.quiz.forEach(function(q,n){
+    h+='<div class="q" id="q'+n+'"><p>'+(n+1)+'. '+q.q+'</p>';
+    var order=q.o.map(function(_,k){return k;});
+    for(var x=order.length-1;x>0;x--){var y=Math.floor(Math.random()*(x+1));var t=order[x];order[x]=order[y];order[y]=t;}
+    order.forEach(function(k){h+='<label data-k="'+k+'"><input type="radio" name="q'+n+'" value="'+k+'"> '+q.o[k]+'</label>';});
+    h+='<div class="ex"></div></div>';
+  });
+  h+='<button onclick="submitQuiz('+i+')">Submit answers</button>';
+  document.getElementById('qbox').innerHTML=h;
+  var r=P.scores[s.id];
+  document.getElementById('res').innerHTML=r?'<div class="score">Last score: '+r.correct+'/'+r.total+' ('+r.pct+'%, '+letter(r.pct)+')</div><p class="small">You can retake it to improve your grade.</p>':'';
+}
+
+function submitQuiz(i){
+  var s=SECTIONS[i];var correct=0;var missing=0;
+  s.quiz.forEach(function(q,n){if(!document.querySelector('input[name="q'+n+'"]:checked'))missing++;});
+  if(missing){document.getElementById('res').innerHTML='<div class="msg" style="color:#ff9a98">Please answer every question before submitting ('+missing+' left).</div>';return;}
+  s.quiz.forEach(function(q,n){
+    var sel=document.querySelector('input[name="q'+n+'"]:checked');
+    var pick=parseInt(sel.value,10);
+    var box=document.getElementById('q'+n);
+    var ok=pick===q.a;if(ok)correct++;
+    box.className='q '+(ok?'right':'wrong');
+    box.querySelectorAll('label').forEach(function(l){var k=parseInt(l.getAttribute('data-k'),10);if(k===pick)l.classList.add('pick');if(k===q.a)l.classList.add('ans');});
+    box.querySelector('.ex').innerHTML=(ok?'✔ Correct. ':'✘ Not quite. The answer is: <b>'+q.o[q.a]+'</b>. ')+q.e;
+  });
+  var total=s.quiz.length;var pct=Math.round(correct/total*100);
+  P.scores[s.id]={correct:correct,total:total,pct:pct,at:new Date().toISOString()};
+  P.sent=null;save();drawChips();
+  document.getElementById('res').innerHTML='<div class="score">Score: '+correct+'/'+total+' ('+pct+'%, '+letter(pct)+')</div><button class="ghost" onclick="renderQuiz('+i+')">Retake quiz</button>';
+  document.getElementById('res').scrollIntoView();
+}
+
+/* ---------------- LISTEN ---------------- */
+var VOICES=[],voiceName=null,speed=0.95;
+try{voiceName=localStorage.getItem('bws_voice')||null;var sp=localStorage.getItem('bws_speed');if(sp)speed=parseFloat(sp);}catch(e){}
+function scoreVoice(v){
+  var n=v.name.toLowerCase(),sc=0;
+  if(!/^en/i.test(v.lang))return -100;
+  if(/natural|neural/.test(n))sc+=50;
+  if(/online/.test(n))sc+=10;
+  if(/aria|jenny|guy|davis|ana|michelle|libby|sonia|ryan/.test(n))sc+=8;
+  if(/samantha|ava|allison|karen|daniel|serena|google us/.test(n))sc+=5;
+  if(/en-us/i.test(v.lang))sc+=3;
+  if(/david|zira|mark|hazel/.test(n))sc-=5;
+  return sc;
+}
+function loadVoices(){
+  if(!window.speechSynthesis)return;
+  VOICES=speechSynthesis.getVoices().filter(function(v){return /^en/i.test(v.lang);}).sort(function(a,b){return scoreVoice(b)-scoreVoice(a);});
+  if(!voiceName&&VOICES.length)voiceName=VOICES[0].name;
+  var sel=document.getElementById('vsel');
+  if(sel){sel.innerHTML=VOICES.map(function(v){return '<option value="'+esc(v.name)+'"'+(v.name===voiceName?' selected':'')+'>'+esc(v.name)+'</option>';}).join('');}
+}
+if(window.speechSynthesis){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function setVoice(n){voiceName=n;try{localStorage.setItem('bws_voice',n);}catch(e){}}
+function setSpeed(x){speed=parseFloat(x);try{localStorage.setItem('bws_speed',speed);}catch(e){}var l=document.getElementById('sval');if(l)l.textContent=speed.toFixed(2)+'x';}
+var listenToken=0;
+function listen(){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  var tmp=document.createElement('div');tmp.innerHTML=SECTIONS[cur].parts[curPart].html;
+  tmp.querySelectorAll('table').forEach(function(t){t.remove();});
+  var t=(tmp.innerText||tmp.textContent).replace(/[\u2022\u00b7]/g,',').replace(/\s*\n+\s*/g,'. ').replace(/\.\s*\./g,'.');
+  var chunks=t.match(/[^.!?]+[.!?]*/g)||[t];
+  var my=++listenToken;var v=null;VOICES.forEach(function(x){if(x.name===voiceName)v=x;});
+  var i=0;
+  function nextChunk(){
+    if(my!==listenToken||i>=chunks.length)return;
+    var txt=chunks[i++].trim();if(!txt)return nextChunk();
+    var u=new SpeechSynthesisUtterance(txt);if(v)u.voice=v;u.rate=speed;u.pitch=1;
+    u.onend=function(){setTimeout(nextChunk,180);};u.onerror=function(){};
+    window.speechSynthesis.speak(u);
+  }
+  nextChunk();
+}
+function stopListen(){listenToken++;if(window.speechSynthesis)window.speechSynthesis.cancel();}
+
+/* ---------------- CERTIFICATE ---------------- */
+function renderCert(){
+  var h='<div class="kick">Finish line</div><h2>Your Grades & Certificate</h2>';
+  h+='<div class="card"><table><tr><th>Part</th><th>Score</th><th>Grade</th></tr>';
+  ids.forEach(function(i){
+    var s=SECTIONS[ids.indexOf(i)];var r=P.scores[i];
+    h+='<tr><td>'+s.title+'</td><td>'+(r?r.correct+'/'+r.total+' ('+r.pct+'%)':'Not taken')+'</td><td>'+(r?letter(r.pct):'-')+'</td></tr>';
+  });
+  h+='</table>';
+  if(allDone()){var o=overall();h+='<div class="score">Overall: '+o+'% ('+letter(o)+')</div><p class="small">Overall = 60% average of the module quizzes + 40% final exam.</p>';}
+  h+='</div>';
+  if(!allDone()){
+    var left=ids.filter(function(i){return !P.scores[i];}).map(function(i){return SECTIONS[ids.indexOf(i)].title;}).join(', ');
+    h+='<div class="warn"><b>Almost there.</b> Finish these first: '+left+'.</div>';
+  }else{
+    h+='<div class="card"><h3 style="margin-top:0">Get your certificate</h3><p>Type your full name and email exactly as you want them. Your certificate will be made, and your section grades and overall grade will be sent to Block Wall Street.</p>';
+    h+='<label>Full name</label><input type="text" id="nm" value="'+esc(P.name||'')+'" placeholder="Your full name">';
+    h+='<label>Email</label><input type="email" id="em" value="'+esc(P.email||'')+'" placeholder="you@email.com">';
+    h+='<div class="tools"><button onclick="makeCert()">Create certificate & send report</button></div><div class="msg" id="smsg"></div></div>';
+    h+='<div id="certwrap"></div>';
+  }
+  h+='<div class="pager"><button class="ghost" onclick="go('+(SECTIONS.length-1)+',0)">← Back to the final exam</button></div>';
+  document.getElementById('main').innerHTML=h;
+  if(allDone()&&P.name){drawCert(P.name);}
+}
+function makeCert(){
+  var nm=document.getElementById('nm').value.trim();
+  var em=document.getElementById('em').value.trim();
+  var msg=document.getElementById('smsg');
+  if(nm.length<2){msg.style.color='#ff9a98';msg.textContent='Please type your full name.';return;}
+  if(!/^\S+@\S+\.\S+$/.test(em)){msg.style.color='#ff9a98';msg.textContent='Please type a valid email.';return;}
+  P.name=nm;P.email=em;save();
+  drawCert(nm);
+  sendReport(nm,em,msg);
+}
+function drawCert(name){
+  var w=1600,h=1130;
+  var wrap=document.getElementById('certwrap');if(!wrap)return;
+  wrap.innerHTML='<canvas id="cv" width="'+w+'" height="'+h+'"></canvas><div class="tools"><button onclick="dl()">Download certificate (PNG)</button></div>';
+  var c=document.getElementById('cv').getContext('2d');
+  var g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#10204a');g.addColorStop(1,'#0a1428');
+  c.fillStyle=g;c.fillRect(0,0,w,h);
+  c.strokeStyle='#d4a94a';c.lineWidth=10;c.strokeRect(40,40,w-80,h-80);
+  c.lineWidth=2;c.strokeRect(62,62,w-124,h-124);
+  c.textAlign='center';
+  function fit(txt,size,fam,max){var f=size;c.font=f+'px '+fam;while(c.measureText(txt).width>max&&f>20){f-=2;c.font=f+'px '+fam;}return c.font;}
+  c.fillStyle='#d4a94a';c.font='28px "DM Mono",monospace';c.fillText('BLOCK WALL STREET',w/2,170);
+  c.fillStyle='#f0cf7a';c.font=fit('CERTIFICATE OF COMPLETION',110,'"Bebas Neue",Impact,sans-serif',w-260);c.fillText('CERTIFICATE OF COMPLETION',w/2,300);
+  c.fillStyle='#9aa8c4';c.font='34px Barlow,Arial,sans-serif';c.fillText('This certifies that',w/2,390);
+  c.fillStyle='#ffffff';c.font=fit(name.toUpperCase(),96,'"Bebas Neue",Impact,sans-serif',w-300);c.fillText(name.toUpperCase(),w/2,520);
+  c.strokeStyle='#d4a94a';c.lineWidth=2;c.beginPath();c.moveTo(w/2-420,545);c.lineTo(w/2+420,545);c.stroke();
+  c.fillStyle='#9aa8c4';c.font='34px Barlow,Arial,sans-serif';c.fillText('has successfully completed the course',w/2,615);
+  c.fillStyle='#f0cf7a';c.font='62px "Bebas Neue",Impact,sans-serif';c.fillText('PRIVACY IN CRYPTO: THE DEEP-DIVE COURSE',w/2,700);
+  c.fillStyle='#e8ecf4';c.font='32px Barlow,Arial,sans-serif';c.fillText('Zcash · NEAR · Starknet · Zano · Midnight',w/2,755);
+  var o=overall();
+  c.fillStyle='#d4a94a';c.font='44px "DM Mono",monospace';c.fillText('Overall grade: '+o+'% ('+letter(o)+')',w/2,860);
+  c.fillStyle='#9aa8c4';c.font='28px "DM Mono",monospace';
+  c.fillText(new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}),w/2,940);
+  c.fillStyle='#d4a94a';c.font='30px "DM Mono",monospace';c.fillText('Issued by Block Wall Street · Chicago',w/2,1010);
+}
+function dl(){
+  var cv=document.getElementById('cv');if(!cv)return;
+  cv.toBlob(function(b){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='BWS_Privacy_in_Crypto_Certificate.png';document.body.appendChild(a);a.click();a.remove();});
+}
+function sendReport(name,email,msg){
+  var o=overall();
+  var lines=['COURSE: '+COURSE_TITLE,'STUDENT: '+name,'EMAIL: '+email,'DATE: '+new Date().toLocaleString(),'','SECTION GRADES:'];
+  ids.forEach(function(i){var s=SECTIONS[ids.indexOf(i)];var r=P.scores[i];lines.push('- '+s.title+': '+(r?r.correct+'/'+r.total+' ('+r.pct+'%, '+letter(r.pct)+')':'not taken'));});
+  lines.push('','OVERALL (60% module quizzes + 40% final): '+o+'% ('+letter(o)+')','','Certificate issued to: '+name);
+  msg.style.color='#9aa8c4';msg.textContent='Sending your report...';
+  fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({access_key:KEY,subject:'Course Completion: '+COURSE_TITLE+' - '+name+' ('+o+'%)',from_name:'BWS Course Report',name:name,email:email,message:lines.join('\n')})})
+  .then(function(r){return r.json();})
+  .then(function(j){
+    if(j&&j.success){P.sent=new Date().toISOString();save();msg.style.color='#3fb97f';msg.textContent='Report sent to Block Wall Street. Your certificate is below. Download it now.';}
+    else{msg.style.color='#ff9a98';msg.textContent='Your certificate is ready below, but the report did not send. Please tap the button again.';}
+  })
+  .catch(function(){msg.style.color='#ff9a98';msg.textContent='Your certificate is ready below, but the report could not be sent (check your connection and tap the button again).';});
+}
+go(0,0);
+</script>
+</body>
+</html>
